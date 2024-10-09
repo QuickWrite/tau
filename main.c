@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 typedef short elem;
 
@@ -11,7 +10,7 @@ typedef struct {
 
     //
 
-    short def;
+    elem def;
 
     size_t cursor;
 } Tape;
