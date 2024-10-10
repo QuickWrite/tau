@@ -78,6 +78,10 @@ void right(Tape* const tape) {
     tape->size *= 2;
 }
 
+void write_symbol(Tape* const tape, const Symbol symbol) {
+    tape->content[tape->cursor] = symbol;
+}
+
 void free_tape(Tape* const tape) {
     free(tape->content);
 
@@ -96,20 +100,88 @@ void print(const Tape* const tape){
     printf("cursor: %i\n", tape->cursor);    
 }
 
+enum Direction {
+    LEFT,
+    RIGHT,
+    STAY
+};
+
+struct Rule;
+
+struct State {
+    char* name;
+
+    struct Rule* rules;
+};
+
+struct Rule {
+    Symbol write_symbol;
+    enum Direction direction;
+    struct State* next_state;
+};
+
+struct TuringMachine {
+    Tape tape;
+
+    const struct State* state;
+};
+
+void next_state(struct TuringMachine* const machine) {
+    const struct Rule rule = machine->state->rules[machine->tape.content[machine->tape.cursor]];
+    
+    write_symbol(&machine->tape, rule.write_symbol);
+
+    machine->state = rule.next_state;
+
+    switch (rule.direction)
+    {
+    case RIGHT:
+        right(&machine->tape);
+        break;
+    case LEFT:
+        left(&machine->tape);
+        break;
+    case STAY:
+        // Do nothing
+        break;
+    }
+}
+
 /**
- * Example of the tape
+ * Example of the Turing Machine
  */
 int main(const int argc, const char** const argv) {
     Tape* const tape = init_tape(0, 5);
+    struct TuringMachine machine = {
+        .tape = *tape
+    };
 
-    for (size_t i = 1; i < 11; i++){
-        left(tape);
+    struct State start = {
+        .name = "START"
+    };
 
-        tape->content[tape->cursor] = i;
-
-        print(tape);
-        printf("----------------------\n");
-    }
+    struct Rule rules[] = {
+        {
+            1,
+            STAY,
+            &start
+        },
+        {
+            2,
+            RIGHT,
+            NULL
+        }
+    };
     
-    free_tape(tape);
+    start.rules = rules;
+
+    machine.state = &start;
+
+    while(machine.state != NULL) {
+        printf("%s\n", machine.state->name);
+        print(&machine.tape);
+        next_state(&machine);
+        printf("----------------\n");
+    }
+    print(&machine.tape);
 }
