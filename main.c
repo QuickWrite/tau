@@ -4,7 +4,7 @@
 
 typedef short Symbol;
 
-typedef struct {
+struct Tape {
     Symbol* content;
     size_t size;
 
@@ -13,7 +13,7 @@ typedef struct {
     Symbol def;
 
     size_t cursor;
-} Tape;
+};
 
 static void set_default(Symbol* const start, const size_t length, const Symbol def) {
     for(size_t i = 0; i < length; i++){
@@ -21,8 +21,8 @@ static void set_default(Symbol* const start, const size_t length, const Symbol d
     }
 }
 
-Tape* const init_tape(const Symbol def, const size_t size) {
-    Tape* const tape = malloc(sizeof *tape);
+struct Tape* const init_tape(const Symbol def, const size_t size) {
+    struct Tape* const tape = malloc(sizeof *tape);
     
     tape->content = malloc(sizeof(Symbol) * size);
 
@@ -36,7 +36,7 @@ Tape* const init_tape(const Symbol def, const size_t size) {
     return tape;
 }
 
-void left(Tape* const tape) {
+void left(struct Tape* const tape) {
     if(tape->cursor > 0) {
         --tape->cursor;
         return;
@@ -59,7 +59,7 @@ void left(Tape* const tape) {
     tape->size *= 2;
 }
 
-void right(Tape* const tape) {
+void right(struct Tape* const tape) {
     if(!(tape->size < ++(tape->cursor))) {
         return;
     }
@@ -78,17 +78,17 @@ void right(Tape* const tape) {
     tape->size *= 2;
 }
 
-void write_symbol(Tape* const tape, const Symbol symbol) {
+void write_symbol(struct Tape* const tape, const Symbol symbol) {
     tape->content[tape->cursor] = symbol;
 }
 
-void free_tape(Tape* const tape) {
+void free_tape(struct Tape* const tape) {
     free(tape->content);
 
     free(tape);
 }
 
-void print(const Tape* const tape){
+void print(const struct Tape* const tape){
     printf("Contents of tape: \n");
     printf("Content: ");
     for (size_t i = 0; i < tape->size; i++) {
@@ -121,7 +121,7 @@ struct Rule {
 };
 
 struct TuringMachine {
-    Tape tape;
+    struct Tape tape;
 
     const struct State* state;
 };
@@ -151,7 +151,7 @@ void next_state(struct TuringMachine* const machine) {
  * Example of the Turing Machine
  */
 int main(const int argc, const char** const argv) {
-    Tape* const tape = init_tape(0, 5);
+    struct Tape* const tape = init_tape(0, 5);
     struct TuringMachine machine = {
         .tape = *tape
     };
