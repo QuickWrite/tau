@@ -15,14 +15,14 @@ typedef struct {
     size_t cursor;
 } Tape;
 
-void set_default(elem* start, size_t length, elem def) {
+static void set_default(elem* const start, const size_t length, const elem def) {
     for(size_t i = 0; i < length; i++){
         ((elem*)start)[i] = def;
     }
 }
 
-Tape* init_tape(elem def, size_t size) {
-    Tape* tape = malloc(sizeof *tape);
+Tape* const init_tape(const elem def, const size_t size) {
+    Tape* const tape = malloc(sizeof *tape);
     
     tape->content = malloc(sizeof(elem) * size);
 
@@ -36,7 +36,7 @@ Tape* init_tape(elem def, size_t size) {
     return tape;
 }
 
-void left(Tape* tape) {
+void left(Tape* const tape) {
     if(tape->cursor > 0) {
         --tape->cursor;
         return;
@@ -59,7 +59,7 @@ void left(Tape* tape) {
     tape->size *= 2;
 }
 
-void right(Tape* tape) {
+void right(Tape* const tape) {
     if(!(tape->size < ++(tape->cursor))) {
         return;
     }
@@ -78,13 +78,13 @@ void right(Tape* tape) {
     tape->size *= 2;
 }
 
-void free_tape(Tape* tape) {
+void free_tape(Tape* const tape) {
     free(tape->content);
 
     free(tape);
 }
 
-void print(Tape* tape){
+void print(const Tape* const tape){
     printf("Contents of tape: \n");
     printf("Content: ");
     for (size_t i = 0; i < tape->size; i++) {
@@ -99,10 +99,10 @@ void print(Tape* tape){
 /**
  * Example of the tape
  */
-int main(int argc, char** argv) {
-    Tape* tape = init_tape(0, 5);
+int main(const int argc, const char** const argv) {
+    Tape* const tape = init_tape(0, 5);
 
-    for (size_t i = 0; i < 10; i++){
+    for (size_t i = 1; i < 11; i++){
         left(tape);
 
         tape->content[tape->cursor] = i;
