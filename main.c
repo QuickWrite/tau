@@ -2,29 +2,29 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef short elem;
+typedef short Symbol;
 
 typedef struct {
-    elem* content;
+    Symbol* content;
     size_t size;
 
     //
 
-    elem def;
+    Symbol def;
 
     size_t cursor;
 } Tape;
 
-static void set_default(elem* const start, const size_t length, const elem def) {
+static void set_default(Symbol* const start, const size_t length, const Symbol def) {
     for(size_t i = 0; i < length; i++){
-        ((elem*)start)[i] = def;
+        ((Symbol*)start)[i] = def;
     }
 }
 
-Tape* const init_tape(const elem def, const size_t size) {
+Tape* const init_tape(const Symbol def, const size_t size) {
     Tape* const tape = malloc(sizeof *tape);
     
-    tape->content = malloc(sizeof(elem) * size);
+    tape->content = malloc(sizeof(Symbol) * size);
 
     set_default(tape->content, size, def);
 
@@ -42,7 +42,7 @@ void left(Tape* const tape) {
         return;
     }
 
-    elem* new = malloc(sizeof(elem) * tape->size * 2);
+    Symbol* new = malloc(sizeof(Symbol) * tape->size * 2);
 
     if(!new) {
         printf("Not enough memory\n");
@@ -50,7 +50,7 @@ void left(Tape* const tape) {
         exit(EXIT_FAILURE);
     }
 
-    memcpy(new + tape->size, tape->content, sizeof(elem) * tape->size);
+    memcpy(new + tape->size, tape->content, sizeof(Symbol) * tape->size);
     set_default(new, tape->size, tape->def);
 
     tape->content = new;
@@ -64,7 +64,7 @@ void right(Tape* const tape) {
         return;
     }
 
-    elem* new = realloc(tape->content, sizeof(elem) * tape->size * 2);
+    Symbol* new = realloc(tape->content, sizeof(Symbol) * tape->size * 2);
 
     if(!new) {
         printf("Not enough memory\n");
