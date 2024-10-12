@@ -53,6 +53,8 @@ void left(struct Tape* const tape) {
     memcpy(new + tape->size, tape->content, sizeof(Symbol) * tape->size);
     set_default(new, tape->size, tape->def);
 
+    free(tape->content);
+
     tape->content = new;
 
     tape->cursor += tape->size - 1;
