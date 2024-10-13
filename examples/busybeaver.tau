@@ -1,0 +1,24 @@
+# 3-state Busy Beaver
+# From https://en.wikipedia.org/wiki/Turing_machine
+
+symbols = 0,1
+blank = 0
+init = A
+end = HALT
+
+------
+
+A {
+    0 = 1, RIGHT, B
+    1 = 1, LEFT, C
+}
+
+B {
+    0 = 1, LEFT, A
+    1 = 1, RIGHT, B
+}
+
+C {
+    0 = 1, LEFT, B
+    1 = 1, RIGHT, HALT
+}
