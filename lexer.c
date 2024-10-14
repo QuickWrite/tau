@@ -1,10 +1,10 @@
 #include "lexer.h"
 
-#include <ctype.h>
 #include <assert.h>
+#include <ctype.h>
 #include <stdlib.h>
 
-struct Lexer initLexer(const char* const fileName) {
+struct Lexer init_lexer(const char* const fileName) {
     FILE* fptr = fopen(fileName, "r");
 
     struct Lexer lexer = {
@@ -14,26 +14,26 @@ struct Lexer initLexer(const char* const fileName) {
     return lexer;
 }
 
-void skipWhitespace(FILE* const fptr) {
+void skip_whitespace(FILE* const fptr) {
     int c;
     while((c = getc(fptr)) != EOF && isspace(c));
 
     ungetc(c, fptr);
 }
 
-void skipComment(FILE* const fptr) {
+void skip_comment(FILE* const fptr) {
     int c;
     while((c = getc(fptr)) != EOF && c != '\n');
 }
 
-void skipDelimiter(FILE* const fptr) {
+void skip_delimiter(FILE* const fptr) {
     int c;
     while((c = getc(fptr)) != EOF && c == '-');
 
     ungetc(c, fptr);
 }
 
-char* getIdentifier(FILE* const fptr, int c) {
+char* get_identifier(FILE* const fptr, int c) {
     char* buf = calloc(16, sizeof(char));
     buf[0] = c;
 
@@ -55,7 +55,7 @@ char* getIdentifier(FILE* const fptr, int c) {
     return buf;
 }
 
-char* getNumber(FILE* const fptr, int c) {
+char* get_number(FILE* const fptr, int c) {
     char* buf = calloc(16, sizeof(char));
     buf[0] = c;
 
@@ -77,8 +77,8 @@ char* getNumber(FILE* const fptr, int c) {
     return buf;
 }
 
-struct Token getNextToken(struct Lexer* const lexer) {
-    skipWhitespace(lexer->fptr);
+struct Token get_next_token(struct Lexer* const lexer) {
+    skip_whitespace(lexer->fptr);
 
     int c = getc(lexer->fptr);
     switch (c) {
@@ -87,9 +87,9 @@ struct Token getNextToken(struct Lexer* const lexer) {
 
     case '#':
         // This is a comment. It should not be returned as a token as it is completely useless for a parser
-        skipComment(lexer->fptr);
+        skip_comment(lexer->fptr);
 
-        return getNextToken(lexer);
+        return get_next_token(lexer);
         
     case '=':
         return (struct Token){.type = EQUALS};
@@ -101,7 +101,7 @@ struct Token getNextToken(struct Lexer* const lexer) {
         return (struct Token){.type = CURLY_CLOSE};
 
     case '-':
-        skipDelimiter(lexer->fptr);
+        skip_delimiter(lexer->fptr);
 
         return (struct Token){.type = DELIMITER};
 
@@ -109,14 +109,14 @@ struct Token getNextToken(struct Lexer* const lexer) {
         if(isalpha(c)) {
             return (struct Token){
                 .type = IDENTIFIER, 
-                .content = getIdentifier(lexer->fptr, c)
+                .content = get_identifier(lexer->fptr, c)
             };
         }
 
         if(isnumber(c)) {
             return (struct Token){
                 .type = NUMBER, 
-                .content = getNumber(lexer->fptr, c)
+                .content = get_number(lexer->fptr, c)
             };
         }
 

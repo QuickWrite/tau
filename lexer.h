@@ -22,6 +22,6 @@ struct Lexer {
     FILE* fptr;
 };
 
-struct Lexer initLexer(const char* const fileName);
+struct Lexer init_lexer(const char* const fileName);
 
-struct Token getNextToken(struct Lexer* const lexer);
+struct Token get_next_token(struct Lexer* const lexer);
