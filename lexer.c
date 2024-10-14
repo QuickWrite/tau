@@ -63,7 +63,7 @@ char* get_number(FILE* const fptr, int c) {
     for(; i < 16; ++i) {
         c = getc(fptr);
 
-        if(!isnumber(c)) {
+        if(!isdigit(c)) {
             break;
         }
 
@@ -113,7 +113,7 @@ struct Token get_next_token(struct Lexer* const lexer) {
             };
         }
 
-        if(isnumber(c)) {
+        if(isdigit(c)) {
             return (struct Token){
                 .type = NUMBER, 
                 .content = get_number(lexer->fptr, c)
