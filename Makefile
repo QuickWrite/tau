@@ -1,2 +1,2 @@
 build:
-	cc main.c -Wall -Wextra -o tau
+	cc main.c tape.c turingmachine.c -Wall -Wextra -o tau
