@@ -21,12 +21,10 @@ static void set_default(Symbol* const start, const size_t length, const Symbol d
     }
 }
 
-struct Tape* const init_tape(const Symbol def, const size_t size) {
+struct Tape* init_tape_full(const Symbol def, Symbol* content, const size_t size) {
     struct Tape* const tape = malloc(sizeof *tape);
     
-    tape->content = malloc(sizeof(Symbol) * size);
-
-    set_default(tape->content, size, def);
+    tape->content = content;
 
     tape->size = size;
 
@@ -34,6 +32,15 @@ struct Tape* const init_tape(const Symbol def, const size_t size) {
     tape->cursor = size / 2;
 
     return tape;
+}
+
+struct Tape* init_tape(const Symbol def) {
+    const size_t size = 16;
+    Symbol* const content = malloc(sizeof(Symbol) * size);
+
+    set_default(content, size, def);
+
+    return init_tape_full(def, content, size);
 }
 
 void left(struct Tape* const tape) {
@@ -153,7 +160,7 @@ void next_state(struct TuringMachine* const machine) {
  * Example of the Turing Machine
  */
 int main(const int argc, const char** const argv) {
-    struct Tape* const tape = init_tape(0, 5);
+    struct Tape* const tape = init_tape(0);
     struct TuringMachine machine = {
         .tape = *tape
     };
