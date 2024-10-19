@@ -20,8 +20,11 @@ struct Token {
 
 struct Lexer {
     FILE* fptr;
+
+    struct Token curr_token;
+    struct Token next_token;   
 };
 
 struct Lexer init_lexer(const char* const fileName);
 
-struct Token get_next_token(struct Lexer* const lexer);
+void next_token(struct Lexer* const lexer);

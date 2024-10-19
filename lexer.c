@@ -11,6 +11,8 @@ struct Lexer init_lexer(const char* const fileName) {
         .fptr = fptr
     };
 
+    next_token(&lexer);
+
     return lexer;
 }
 
@@ -77,47 +79,58 @@ char* get_number(FILE* const fptr, int c) {
     return buf;
 }
 
-struct Token get_next_token(struct Lexer* const lexer) {
+void next_token(struct Lexer* const lexer) {
     skip_whitespace(lexer->fptr);
+
+    struct Token next;
 
     int c = getc(lexer->fptr);
     switch (c) {
     case EOF:
-        return (struct Token){.type = END_OF_FILE};
+        next = (struct Token){.type = END_OF_FILE};
+        break;
 
     case '#':
         // This is a comment. It should not be returned as a token as it is completely useless for a parser
         skip_comment(lexer->fptr);
 
-        return get_next_token(lexer);
+        next_token(lexer);
+        return;
         
     case '=':
-        return (struct Token){.type = EQUALS};
+        next = (struct Token){.type = EQUALS};
+        break;
     case ',':
-        return (struct Token){.type = COMMA};
+        next = (struct Token){.type = COMMA};
+        break;
     case '{':
-        return (struct Token){.type = CURLY_OPEN};
+        next = (struct Token){.type = CURLY_OPEN};
+        break;
     case '}':
-        return (struct Token){.type = CURLY_CLOSE};
+        next = (struct Token){.type = CURLY_CLOSE};
+        break;
 
     case '-':
         skip_delimiter(lexer->fptr);
 
-        return (struct Token){.type = DELIMITER};
+        next = (struct Token){.type = DELIMITER};
+        break;
 
     default:
         if(isalpha(c)) {
-            return (struct Token){
+            next = (struct Token){
                 .type = IDENTIFIER, 
                 .content = get_identifier(lexer->fptr, c)
             };
+            break;
         }
 
         if(isdigit(c)) {
-            return (struct Token){
+            next = (struct Token){
                 .type = NUMBER, 
                 .content = get_number(lexer->fptr, c)
             };
+            break;
         }
 
         assert(0 && "This is still TODO");
@@ -126,6 +139,7 @@ struct Token get_next_token(struct Lexer* const lexer) {
         break;
     }
 
-    return (struct Token){0};
+    lexer->curr_token = lexer->next_token;
+    lexer->next_token = next;
 }
 
