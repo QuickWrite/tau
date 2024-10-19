@@ -3,7 +3,7 @@
 
 symbols = 0,1
 blank = 0
-init = A
+start = A
 end = HALT
 
 ------
