@@ -1,5 +1,6 @@
 #include "parser.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -7,6 +8,8 @@
 
 struct Head {
     Symbol blank;
+    bool blank_defined;
+
     Symbol* symbols;
     size_t symbol_len;
 
@@ -88,6 +91,11 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
     }
     
     if(strcmp(name, "blank") == 0) {
+        if (head->blank_defined) {
+            printf("Blank specified multiple times.\n");
+            exit(10);
+        }
+
         // TODO: Add identifier support
 
         next_token(lexer);
@@ -98,6 +106,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
         }
         
         head->blank = atoi(lexer->curr_token.content);
+        head->blank_defined = true;
 
         free(lexer->curr_token.content);
 
@@ -105,6 +114,11 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
     }
 
     if (strcmp(name, "start") == 0) {
+        if (head->start_state != 0) {
+            printf("Start state specified multiple times.\n");
+            exit(10);
+        }
+
         next_token(lexer);
 
         if (lexer->curr_token.type != IDENTIFIER) {
@@ -118,6 +132,11 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
     }
     
     if (strcmp(name, "end") == 0) {
+        if (head->end_state != 0) {
+            printf("End state specified multiple times.\n");
+            exit(10);
+        }
+
         next_token(lexer);
 
         if (lexer->curr_token.type != IDENTIFIER) {
@@ -131,19 +150,29 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
     }
 
     if (strcmp(name, "symbols") == 0) {
+        if (head->symbol_len != 0) {
+            printf("Symbols were specified multiple times.\n");
+            exit(10);
+        }
+
         head->symbol_len = parse_symbol_list(lexer, &head->symbols);
 
         TO_END;
     }
 
     if (strcmp(name, "tape") == 0) {
+        if (head->tape_len != 0) {
+            printf("Tape was specified multiple times.\n");
+            exit(10);
+        }
+
         head->tape_len = parse_symbol_list(lexer, &head->tape);
 
         TO_END;
     }
 
 end:
-    free(name);
+    free((char*)name);
 }
 
 static void parse_head(struct Lexer* const lexer, struct Head* head) {
