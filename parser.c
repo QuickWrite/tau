@@ -32,14 +32,14 @@ static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbol
         if (lexer->curr_token.type == END_OF_FILE) {
             // TODO: Way better error
 
-            printf("End of file whilst parsing list.\n");
+            fprintf(stderr, "End of file whilst parsing list.\n");
             exit(10);
         }
 
         if (lexer->curr_token.type != NUMBER) {
             // TODO: Way better error
 
-            printf("Lists currently only support numbers.\n");
+            fprintf(stderr, "Lists currently only support numbers.\n");
             exit(10);
         }
 
@@ -47,7 +47,7 @@ static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbol
             *symbols = realloc(*symbols, sizeof(Symbol) * allocated * 2);
 
             if (*symbols == NULL) {
-                printf("Error whilst reallocating array.\n");
+                fprintf(stderr, "Error whilst reallocating array.\n");
                 exit(1);
             }
             
@@ -73,7 +73,7 @@ static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbol
     // stuff happening (Same reason why it is also checked).
     *symbols = realloc(*symbols, sizeof(Symbol) * size);
     if (*symbols == NULL) {
-        printf("Error whilst reallocating array.\n");
+        fprintf(stderr, "Error whilst reallocating array.\n");
         exit(1);
     }
 
@@ -86,13 +86,13 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
     if (lexer->curr_token.type != EQUALS) {
         // TODO: Way better error
 
-        printf("Statement has to have a `=`.\n");
+        fprintf(stderr, "Statement has to have a `=`.\n");
         exit(10);
     }
     
     if(strcmp(name, "blank") == 0) {
         if (head->blank_defined) {
-            printf("Blank specified multiple times.\n");
+            fprintf(stderr, "Blank specified multiple times.\n");
             exit(10);
         }
 
@@ -101,7 +101,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
         next_token(lexer);
 
         if (lexer->curr_token.type != NUMBER) {
-            printf("Content of 'blank' has to be a number.\n");
+            fprintf(stderr, "Content of 'blank' has to be a number.\n");
             exit(10);
         }
         
@@ -115,14 +115,14 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
 
     if (strcmp(name, "start") == 0) {
         if (head->start_state != 0) {
-            printf("Start state specified multiple times.\n");
+            fprintf(stderr, "Start state specified multiple times.\n");
             exit(10);
         }
 
         next_token(lexer);
 
         if (lexer->curr_token.type != IDENTIFIER) {
-            printf("Content of 'start' has to be an identifier.\n");
+            fprintf(stderr, "Content of 'start' has to be an identifier.\n");
             exit(10);
         }
 
@@ -133,14 +133,14 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
     
     if (strcmp(name, "end") == 0) {
         if (head->end_state != 0) {
-            printf("End state specified multiple times.\n");
+            fprintf(stderr, "End state specified multiple times.\n");
             exit(10);
         }
 
         next_token(lexer);
 
         if (lexer->curr_token.type != IDENTIFIER) {
-            printf("Content of 'end' has to be an identifier.\n");
+            fprintf(stderr, "Content of 'end' has to be an identifier.\n");
             exit(10);
         }
 
@@ -151,7 +151,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
 
     if (strcmp(name, "symbols") == 0) {
         if (head->symbol_len != 0) {
-            printf("Symbols were specified multiple times.\n");
+            fprintf(stderr, "Symbols were specified multiple times.\n");
             exit(10);
         }
 
@@ -162,7 +162,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
 
     if (strcmp(name, "tape") == 0) {
         if (head->tape_len != 0) {
-            printf("Tape was specified multiple times.\n");
+            fprintf(stderr, "Tape was specified multiple times.\n");
             exit(10);
         }
 
@@ -182,14 +182,14 @@ static void parse_head(struct Lexer* const lexer, struct Head* head) {
         if (lexer->curr_token.type == END_OF_FILE) {
             // TODO: Way better error
 
-            printf("End of file reached before end of head.\n");
+            fprintf(stderr, "End of file reached before end of head.\n");
             exit(10);
         }
 
         if(lexer->curr_token.type != IDENTIFIER) {
             // TODO: Way better error
 
-            printf("Statement has to start with an identifier.\n");
+            fprintf(stderr, "Statement has to start with an identifier.\n");
             exit(10);
         }
 
@@ -197,12 +197,12 @@ static void parse_head(struct Lexer* const lexer, struct Head* head) {
     }
 
     if (head->start_state == NULL) {
-        printf("A starting state has to be defined.\n");
+        fprintf(stderr, "A starting state has to be defined.\n");
         exit(10);
     }
 
     if (head->symbol_len == 0) {
-        printf("A tape needs to have symbols.\n");
+        fprintf(stderr, "A tape needs to have symbols.\n");
         exit(10);
     }
 }

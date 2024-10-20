@@ -40,7 +40,7 @@ void left(struct Tape* const tape) {
     Symbol* new = malloc(sizeof(Symbol) * tape->size * 2);
 
     if(!new) {
-        printf("Not enough memory\n");
+        fprintf(stderr, "Not enough memory\n");
 
         exit(EXIT_FAILURE);
     }
@@ -64,7 +64,7 @@ void right(struct Tape* const tape) {
     Symbol* new = realloc(tape->content, sizeof(Symbol) * tape->size * 2);
 
     if(!new) {
-        printf("Not enough memory\n");
+        fprintf(stderr, "Not enough memory\n");
 
         exit(EXIT_FAILURE);
     }

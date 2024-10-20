@@ -36,7 +36,7 @@ void skip_delimiter(FILE* const fptr) {
 }
 
 char* get_identifier(FILE* const fptr, int c) {
-    char* buf = calloc(16, sizeof(char));
+    char* buf = calloc(17, sizeof(char));
     buf[0] = c;
 
     int i = 1;
@@ -50,7 +50,9 @@ char* get_identifier(FILE* const fptr, int c) {
         buf[i] = c;
     }
 
-    assert(i < 16 && "Identifiers cannot be larger than '16' characters long.");
+    if(i > 16) {
+        fprintf(stderr, "Identifiers cannot be larger than '16' characters long.");
+    }
     
     ungetc(c, fptr);
 
@@ -58,7 +60,7 @@ char* get_identifier(FILE* const fptr, int c) {
 }
 
 char* get_number(FILE* const fptr, int c) {
-    char* buf = calloc(16, sizeof(char));
+    char* buf = calloc(17, sizeof(char));
     buf[0] = c;
 
     int i = 1;
@@ -72,7 +74,9 @@ char* get_number(FILE* const fptr, int c) {
         buf[i] = c;
     }
 
-    assert(i < 16 && "Numbers cannot be larger than '16' characters long.");
+    if(i > 16) {
+        fprintf(stderr, "Numbers cannot be larger than '16' characters long.");
+    }
     
     ungetc(c, fptr);
 
