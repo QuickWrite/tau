@@ -41,7 +41,13 @@ static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbol
         }
 
         if(allocated < size + 1) {
-            realloc(*symbols, sizeof(Symbol) * allocated * 2);
+            *symbols = realloc(*symbols, sizeof(Symbol) * allocated * 2);
+
+            if (*symbols == NULL) {
+                printf("Error whilst reallocating array.\n");
+                exit(1);
+            }
+            
             allocated *= 2;
         }
 
@@ -58,7 +64,15 @@ static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbol
         next_token(lexer);
     };
     
-    realloc(*symbols, sizeof(Symbol) * size);
+    // Even though it should never change the pointer as this
+    // will always shrink the amount that was allocated, this
+    // uses the returned pointer in case there is some weird
+    // stuff happening (Same reason why it is also checked).
+    *symbols = realloc(*symbols, sizeof(Symbol) * size);
+    if (*symbols == NULL) {
+        printf("Error whilst reallocating array.\n");
+        exit(1);
+    }
 
     return size;
 }
