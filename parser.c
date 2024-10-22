@@ -81,6 +81,8 @@ static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbol
 }
 
 static void parse_statement(struct Lexer* const lexer, struct Head* head, const char* const name) {
+    *head = (struct Head){0};
+
     next_token(lexer);
 
     if (lexer->curr_token.type != EQUALS) {
@@ -208,7 +210,7 @@ static void parse_head(struct Lexer* const lexer, struct Head* head) {
 }
 
 struct TuringMachine* parse(struct Lexer* const lexer) {
-    struct Head head = {0};
+    struct Head head;
     parse_head(lexer, &head);
 
     return NULL;
