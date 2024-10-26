@@ -81,8 +81,6 @@ static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbol
 }
 
 static void parse_statement(struct Lexer* const lexer, struct Head* head, const char* const name) {
-    *head = (struct Head){0};
-
     next_token(lexer);
 
     if (lexer->curr_token.type != EQUALS) {
@@ -178,6 +176,8 @@ end:
 }
 
 static void parse_head(struct Lexer* const lexer, struct Head* head) {
+    *head = (struct Head){0};
+
     next_token(lexer);
 
     for (;lexer->curr_token.type != DELIMITER; next_token(lexer)) {
