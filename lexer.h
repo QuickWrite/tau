@@ -8,6 +8,7 @@ enum TokenType {
     NUMBER,
     EQUALS,
     COMMA,
+    UNDERSCORE,
     CURLY_OPEN,
     CURLY_CLOSE,
     DELIMITER

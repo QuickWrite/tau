@@ -219,6 +219,7 @@ struct IntermediateRule {
 struct IntermediateState {
     char* name;
 
+    struct IntermediateRule def;
     struct IntermediateRule* rules;
 };
 
@@ -309,22 +310,30 @@ void parse_state(struct Lexer* const lexer, struct IntermediateState* state, con
 
     while (lexer->next_token.type != CURLY_CLOSE && lexer->next_token.type != END_OF_FILE) {
         next_token(lexer);
-        if(lexer->curr_token.type != NUMBER) {
-            fprintf(stderr, "Only numbers are supported as Symbols.\n");
+        if(lexer->curr_token.type != NUMBER && lexer->curr_token.type != UNDERSCORE) {
+            fprintf(stderr, "Only numbers are supported as Symbols. The default can be declared with `_`.\n");
             exit(10);
         }
 
-        size_t position = check_symbol(symbols, symbol_len, atoi(lexer->curr_token.content));
-        if (position == (size_t)-1) {
-            fprintf(stderr, "Symbol %s does not exist in symbol list.\n", lexer->curr_token.content);
-            exit(10);
-        }
+        size_t position = lexer->curr_token.type == UNDERSCORE ? -1 : check_symbol(symbols, symbol_len, atoi(lexer->curr_token.content));
 
-        if(state->rules[position].next_state != NULL) {
-            fprintf(stderr, "The rule for '%s' cannot be declared twice.\n", lexer->curr_token.content);
-            exit(10);
+        if(lexer->curr_token.type == NUMBER) {
+            if (position == (size_t)-1) {
+                fprintf(stderr, "Symbol %s does not exist in symbol list.\n", lexer->curr_token.content);
+                exit(10);
+            }
+
+            if(state->rules[position].next_state != NULL) {
+                fprintf(stderr, "The rule for '%s' cannot be declared twice.\n", lexer->curr_token.content);
+                exit(10);
+            }
+            free(lexer->curr_token.content);
+        } else {
+            if(state->def.next_state != NULL) {
+                fprintf(stderr, "The default rule cannot be declared twice.\n");
+                exit(10);
+            }
         }
-        free(lexer->curr_token.content);
 
         next_token(lexer);
         if(lexer->curr_token.type != EQUALS) {
@@ -333,7 +342,7 @@ void parse_state(struct Lexer* const lexer, struct IntermediateState* state, con
         }
 
         next_token(lexer);
-        parse_rule(lexer, &state->rules[position]);
+        parse_rule(lexer, position == (size_t)-1 ? &state->def : &state->rules[position]);
     }
     next_token(lexer);
 }

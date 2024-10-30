@@ -111,6 +111,9 @@ void next_token(struct Lexer* const lexer) {
     case ',':
         next = (struct Token){.type = COMMA};
         break;
+    case '_':
+        next = (struct Token){.type = UNDERSCORE};
+        break;
     case '{':
         next = (struct Token){.type = CURLY_OPEN};
         break;
