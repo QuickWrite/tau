@@ -7,6 +7,10 @@
 struct Lexer init_lexer(const char* const fileName) {
     FILE* fptr = fopen(fileName, "r");
 
+    if(fptr == NULL) {
+        return (struct Lexer){0};
+    }
+
     struct Lexer lexer = {
         .fptr = fptr
     };
