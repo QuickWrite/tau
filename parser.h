@@ -1,6 +1,5 @@
 #pragma once
 
-#include "lexer.h"
 #include "turingmachine.h"
 
-struct TuringMachine* parse(struct Lexer* const lexer);
+struct TuringMachine* parse(const char* const file_name);

@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "lexer.h"
+
 #define TO_END goto end
 
 struct Head {
@@ -362,15 +364,23 @@ size_t parse_body(struct Lexer* const lexer, struct IntermediateState* states[],
     return amount;
 }
 
-struct TuringMachine* parse(struct Lexer* const lexer) {
+struct TuringMachine* parse(const char* const file_name) {
+    struct Lexer lexer = init_lexer(file_name);
+    if(lexer.fptr == NULL) {
+        fprintf(stderr, "File path `%s` does not exist.\n", file_name);
+        exit(1);
+    }
+
     struct Head head;
-    parse_head(lexer, &head);
+    parse_head(&lexer, &head);
 
     // Remove that delimiter
-    next_token(lexer);
+    next_token(&lexer);
 
     struct IntermediateState* states;
-    size_t states_size = parse_body(lexer, &states, &head);
+    size_t states_size = parse_body(&lexer, &states, &head);
+
+    fclose(lexer.fptr);
 
     // Some code that outputs some diagnostics
     // (It will be removed later on)
