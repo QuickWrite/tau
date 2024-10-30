@@ -47,7 +47,7 @@ char* get_identifier(FILE* const fptr, int c) {
     for(; i < 16; ++i) {
         c = getc(fptr);
 
-        if(!isalnum(c)) {
+        if(!isalnum(c) && c != '_') {
             break;
         }
 
