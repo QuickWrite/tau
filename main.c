@@ -1,42 +1,22 @@
 #include <stdio.h>
 
 #include "turingmachine.h"
+#include "lexer.h"
+#include "parser.h"
 
-/**
- * Example of the Turing Machine
- */
 int main(const int argc, const char** const argv) {
-    struct Tape* const tape = init_tape(0);
-    struct TuringMachine machine = {
-        .tape = *tape
-    };
+    if(argc < 2) {
+        fprintf(stderr, "A file path has to be provided: `tau <path>`\n");
+        return 1;
+    }
 
-    struct State start = {
-        .name = "START"
-    };
+    struct TuringMachine* machine = parse(argv[1]);
 
-    struct Rule rules[] = {
-        {
-            1,
-            STAY,
-            &start
-        },
-        {
-            2,
-            RIGHT,
-            NULL
-        }
-    };
-    
-    start.rules = rules;
-
-    machine.state = &start;
-
-    while(machine.state != NULL) {
-        printf("%s\n", machine.state->name);
-        print(&machine.tape);
-        next_state(&machine);
+    while(machine->state != NULL) {
+        printf("%s\n", machine->state->name);
+        print(&machine->tape);
+        next_state(machine);
         printf("----------------\n");
     }
-    print(&machine.tape);
+    print(&machine->tape);
 }
