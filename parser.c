@@ -373,6 +373,82 @@ size_t parse_body(struct Lexer* const lexer, struct IntermediateState* states[],
     return amount;
 }
 
+static void link_rules(struct State* const state, const struct IntermediateState* const int_state, const size_t rules_size, 
+                struct State* states, struct IntermediateState* const int_states, const size_t states_size, 
+                const char* const end_state) {
+
+    bool missing_rule = false;
+
+    for(size_t i = 0; i < rules_size; ++i) {
+        if(int_state->rules[i].next_state == NULL) {
+            // If the rule does not exist, it will be zero initialized, so that it can be recognized later on.
+            state->rules[i] = (struct Rule){0};
+            printf("Missing rule set!\n");
+            missing_rule = true;
+            continue;
+        }
+
+        state->rules[i] = int_state->rules[i].rule;
+
+        // If the next state is the end state, then it does not have
+        // to try to find the correct state and can just keep it as
+        // NULL.
+        if(strcmp(int_state->rules[i].next_state, end_state) != 0) {
+            for(size_t j = 0; j < states_size; ++j) {
+                if(strcmp(int_states[j].name, int_state->rules[i].next_state) != 0) {
+                    continue;
+                }
+
+                state->rules[i].next_state = states + j;
+                break;
+            }
+
+            if(state->rules[i].next_state == NULL) {
+                fprintf(stderr, "The rule '%s' was used but never defined.\n", int_state->rules[i].next_state);
+                exit(10);
+            }
+        }
+    }
+
+    // TODO: Free those structs
+
+    if(int_state->def.next_state == NULL) {
+        if(missing_rule) {
+            fprintf(stderr, "The state '%s' is not exhaustive. Maybe create an unspecified rule.\n", state->name);
+            exit(10);
+        }
+
+        return;
+    }
+
+    // TODO: Add default handling
+    printf("Currently the code should never reach this place. Wow.\n");
+    exit(100);
+}
+
+struct State* link_states(struct IntermediateState* const int_states, const size_t size, const size_t rule_amount, const char* const end_state) {
+    struct State* states = malloc(sizeof(struct State) * size);
+
+    for(size_t i = 0; i < size; ++i) {
+        states[i].name = int_states[i].name;
+
+        states[i].rules = malloc(sizeof(struct Rule) * rule_amount);
+        link_rules(&states[i], &int_states[i], rule_amount, states, int_states, size, end_state);
+    }
+
+    return states;
+}
+
+struct State* find_start(struct State* states, const size_t states_size, const char* const start) {
+    for(size_t i = 0; i < states_size; ++i) {
+        if(strcmp(states[i].name, start) == 0) {
+            return &states[i];
+        }
+    }
+
+    return NULL;
+}
+
 struct TuringMachine* parse(const char* const file_name) {
     struct Lexer lexer = init_lexer(file_name);
     if(lexer.fptr == NULL) {
@@ -386,20 +462,36 @@ struct TuringMachine* parse(const char* const file_name) {
     // Remove that delimiter
     next_token(&lexer);
 
-    struct IntermediateState* states;
-    size_t states_size = parse_body(&lexer, &states, &head);
+    struct IntermediateState* int_states;
+    size_t states_size = parse_body(&lexer, &int_states, &head);
 
     fclose(lexer.fptr);
 
     // Some code that outputs some diagnostics
     // (It will be removed later on)
-    printf("Amount of states: %zu\n", states_size);
-    for(size_t i = 0; i < states_size; ++i) {
-        printf("   %zu. \"%s\"\n", i, states[i].name);
+    // printf("Amount of states: %zu\n", states_size);
+    // for(size_t i = 0; i < states_size; ++i) {
+    //     printf("   %zu. \"%s\"\n", i, int_states[i].name);
+    //     printf("   Default: Direction: '%i'\n", int_states[i].def.rule.direction);
+    //     printf("   Rules:\n");
+    //     for(size_t j = 0; j < head.symbol_len; ++j) {
+    //         printf("      - Next: '%s', direction: '%i' \n", int_states[i].rules[j].next_state, int_states[i].rules[j].rule.direction);
+    //     }
+    // }
+
+    struct State* states = link_states(int_states, states_size, head.symbol_len, head.end_state);
+
+    struct State* start = find_start(states, states_size, head.start_state);
+    if(start == NULL) {
+        fprintf(stderr, "Referencing starting state does not exist: '%s'.\n", head.start_state);
     }
 
-    // TODO: Convert intermediate structs to actual structs
+    struct TuringMachine* machine = calloc(1, sizeof(struct TuringMachine));
+    machine->state = start;
 
-    return NULL;
+    // TODO: Add default init tape
+    machine->tape = *init_tape(head.blank);
+
+    return machine;
 }
 
