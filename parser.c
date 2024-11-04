@@ -493,18 +493,6 @@ struct TuringMachine* parse(const char* const file_name) {
 
     fclose(lexer.fptr);
 
-    // Some code that outputs some diagnostics
-    // (It will be removed later on)
-    // printf("Amount of states: %zu\n", states_size);
-    // for(size_t i = 0; i < states_size; ++i) {
-    //     printf("   %zu. \"%s\"\n", i, int_states[i].name);
-    //     printf("   Default: Direction: '%i'\n", int_states[i].def.rule.direction);
-    //     printf("   Rules:\n");
-    //     for(size_t j = 0; j < head.symbol_len; ++j) {
-    //         printf("      - Next: '%s', direction: '%i' \n", int_states[i].rules[j].next_state, int_states[i].rules[j].rule.direction);
-    //     }
-    // }
-
     struct State* states = link_states(int_states, states_size, head.symbol_len, head.end_state);
 
     struct State* start = find_start(states, states_size, head.start_state);
