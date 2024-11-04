@@ -383,7 +383,7 @@ static void link_rules(struct State* const state, const struct IntermediateState
         if(int_state->rules[i].next_state == NULL) {
             // If the rule does not exist, it will be zero initialized, so that it can be recognized later on.
             state->rules[i] = (struct Rule){0};
-            printf("Missing rule set!\n");
+
             missing_rule = true;
             continue;
         }
