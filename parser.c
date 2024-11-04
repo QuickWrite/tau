@@ -408,9 +408,9 @@ static void link_rules(struct State* const state, const struct IntermediateState
                 exit(10);
             }
         }
-    }
 
-    // TODO: Free those structs
+        free(int_state->rules[i].next_state);
+    }
 
     if(int_state->def.next_state == NULL) {
         if(missing_rule) {
@@ -494,6 +494,7 @@ struct TuringMachine* parse(const char* const file_name) {
     fclose(lexer.fptr);
 
     struct State* states = link_states(int_states, states_size, head.symbol_len, head.end_state);
+    free(int_states);
 
     struct State* start = find_start(states, states_size, head.start_state);
     if(start == NULL) {
