@@ -421,9 +421,35 @@ static void link_rules(struct State* const state, const struct IntermediateState
         return;
     }
 
-    // TODO: Add default handling
-    printf("Currently the code should never reach this place. Wow.\n");
-    exit(100);
+    // Caching the next state as it is quite an expensive task.
+    struct State* def_next_state = NULL;
+
+    // If the next state is the end state, then it does not have
+    // to try to find the correct state and can just keep it as
+    // NULL.
+    if(strcmp(int_state->def.next_state, end_state) != 0) {
+        for(size_t j = 0; j < states_size; ++j) {
+            if(strcmp(int_states[j].name, int_state->def.next_state) != 0) {
+                continue;
+            }
+            def_next_state = states + j;
+            break;
+        }
+        if(def_next_state == NULL) {
+            fprintf(stderr, "The rule '%s' was used but never defined.\n", int_state->def.next_state);
+            exit(10);
+        }
+    }
+
+    for(size_t i = 0; i < rules_size; ++i) {
+        if(state->rules[i].next_state != NULL) {
+            continue;
+        }
+
+        state->rules[i].direction = int_state->def.rule.direction;
+        state->rules[i].next_state = def_next_state;
+        state->rules[i].write_symbol = int_state->def.rule.write_symbol;
+    }
 }
 
 struct State* link_states(struct IntermediateState* const int_states, const size_t size, const size_t rule_amount, const char* const end_state) {
