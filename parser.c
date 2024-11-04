@@ -209,6 +209,19 @@ static void parse_head(struct Lexer* const lexer, struct Head* head) {
         fprintf(stderr, "A tape needs to have symbols.\n");
         exit(10);
     }
+
+    // If the tape is larger than 0, the tape needs to be corrected.
+    if(head->tape_len > 0) {
+        for(size_t i = 0; i < head->tape_len; ++i) {
+            for(size_t j = 0; j < head->symbol_len; ++j) {
+                if(head->tape[i] == head->symbols[j]) {
+                    head->tape[i] = j;
+                    break;
+                }
+            }
+            // 
+        }
+    }
 }
 
 struct IntermediateRule {
@@ -505,7 +518,17 @@ struct TuringMachine* parse(const char* const file_name) {
     machine->state = start;
 
     // TODO: Add default init tape
-    machine->tape = *init_tape(head.blank);
+    if(head.tape_len > 0) {
+        Symbol* symbols = malloc(sizeof(Symbol) * head.tape_len);
+
+        for(size_t i = 0; i < head.tape_len; ++i) {
+            symbols[i] = head.tape[i];
+        }
+
+        machine->tape = *init_tape_full(head.blank, symbols, head.tape_len);
+    } else {
+        machine->tape = *init_tape(head.blank);
+    }
 
     return machine;
 }
