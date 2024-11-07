@@ -40,23 +40,42 @@ void skip_delimiter(FILE* const fptr) {
 }
 
 char* get_identifier(FILE* const fptr, int c) {
-    char* buf = calloc(17, sizeof(char));
+    size_t size = 16;
+    char* buf = calloc(size, sizeof(char));
+    if(buf ==  NULL) {
+        fprintf(stderr, "Couldn't allocate enough memory.\n");
+        exit(100);
+    }
+
     buf[0] = c;
 
     int i = 1;
-    for(; i < 16; ++i) {
+    for(; i < 255; ++i) {
         c = getc(fptr);
 
         if(!isalnum(c) && c != '_') {
             break;
         }
 
+        if(i >= size) {
+            size *= 2;
+            buf = realloc(buf, sizeof(char) * size);
+
+            if(buf ==  NULL) {
+                fprintf(stderr, "Couldn't allocate enough memory.\n");
+                exit(100);
+            }
+        }
+
         buf[i] = c;
     }
 
-    if(i > 16) {
-        fprintf(stderr, "Identifiers cannot be larger than '16' characters long.");
+    if(i > 255) {
+        fprintf(stderr, "Identifiers cannot be larger than '255' characters long.");
     }
+
+    buf[i] = '\0';
+    buf = realloc(buf, sizeof(char) * (i + 1));
     
     ungetc(c, fptr);
 
