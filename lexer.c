@@ -114,7 +114,7 @@ void next_token(struct Lexer* const lexer) {
     int c = getc(lexer->fptr);
     switch (c) {
     case EOF:
-        next = (struct Token){.type = END_OF_FILE};
+        next = (struct Token){.type = TOK_EOF};
         break;
 
     case '#':
@@ -125,31 +125,31 @@ void next_token(struct Lexer* const lexer) {
         return;
         
     case '=':
-        next = (struct Token){.type = EQUALS};
+        next = (struct Token){.type = TOK_EQUALS};
         break;
     case ',':
-        next = (struct Token){.type = COMMA};
+        next = (struct Token){.type = TOK_COMMA};
         break;
     case '_':
-        next = (struct Token){.type = UNDERSCORE};
+        next = (struct Token){.type = TOK_UNDERSCORE};
         break;
     case '{':
-        next = (struct Token){.type = CURLY_OPEN};
+        next = (struct Token){.type = TOK_OPEN_CURLY};
         break;
     case '}':
-        next = (struct Token){.type = CURLY_CLOSE};
+        next = (struct Token){.type = TOKEN_CLOSE_CURLY};
         break;
 
     case '-':
         skip_delimiter(lexer->fptr);
 
-        next = (struct Token){.type = DELIMITER};
+        next = (struct Token){.type = TOKEN_DELIMITER};
         break;
 
     default:
         if(isalpha(c)) {
             next = (struct Token){
-                .type = IDENTIFIER, 
+                .type = TOK_IDENTIFIER, 
                 .content = get_identifier(lexer->fptr, c)
             };
             break;
@@ -157,7 +157,7 @@ void next_token(struct Lexer* const lexer) {
 
         if(isdigit(c)) {
             next = (struct Token){
-                .type = NUMBER, 
+                .type = TOK_NUMBER, 
                 .content = get_number(lexer->fptr, c)
             };
             break;

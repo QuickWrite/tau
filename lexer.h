@@ -3,15 +3,15 @@
 #include <stdio.h>
 
 enum TokenType {
-    END_OF_FILE,
-    IDENTIFIER,
-    NUMBER,
-    EQUALS,
-    COMMA,
-    UNDERSCORE,
-    CURLY_OPEN,
-    CURLY_CLOSE,
-    DELIMITER
+    TOK_EOF = 0,
+    TOK_IDENTIFIER,
+    TOK_NUMBER,
+    TOK_EQUALS,
+    TOK_COMMA,
+    TOK_UNDERSCORE,
+    TOK_OPEN_CURLY,
+    TOKEN_CLOSE_CURLY,
+    TOKEN_DELIMITER
 };
 
 struct Token {
