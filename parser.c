@@ -284,6 +284,8 @@ void parse_rule(struct Lexer* const lexer, struct IntermediateRule* rule) {
         exit(10);
     }
 
+    free(lexer->curr_token.content);
+
     rule->rule.direction = dir;
 
     next_token(lexer);
@@ -507,6 +509,11 @@ struct TuringMachine* parse(const char* const file_name) {
     fclose(lexer.fptr);
 
     struct State* states = link_states(int_states, states_size, head.symbol_len, head.end_state);
+
+    // Free all intermediate states
+    for(size_t i = 0; i < states_size; ++i) {
+        free(int_states[i].rules);
+    }
     free(int_states);
 
     struct State* start = find_start(states, states_size, head.start_state);
@@ -529,6 +536,12 @@ struct TuringMachine* parse(const char* const file_name) {
     } else {
         machine->tape = *init_tape(head.blank);
     }
+
+    // Free the head
+    free(head.symbols);
+    
+    free(head.end_state);
+    free(head.start_state);
 
     return machine;
 }
