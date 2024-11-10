@@ -365,7 +365,7 @@ void parse_state(struct Lexer* const lexer, struct IntermediateState* state, con
 size_t parse_body(struct Lexer* const lexer, struct IntermediateState* states[], const struct Head* const head) {
     size_t size = 16;
     
-    *states = malloc(sizeof(struct IntermediateState) * size);
+    *states = calloc(size, sizeof(struct IntermediateState));
     size_t amount = 0;
 
     while(lexer->curr_token.type != TOK_EOF) {
