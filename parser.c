@@ -532,9 +532,9 @@ struct TuringMachine* parse(const char* const file_name) {
             symbols[i] = head.tape[i];
         }
 
-        machine->tape = *init_tape_full(head.blank, symbols, head.tape_len);
+        machine->tape = init_tape_full(head.blank, symbols, head.tape_len);
     } else {
-        machine->tape = *init_tape(head.blank);
+        machine->tape = init_tape(head.blank);
     }
 
     // Free the head

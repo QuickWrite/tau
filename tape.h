@@ -15,9 +15,9 @@ struct Tape {
     size_t cursor;
 };
 
-struct Tape* init_tape_full(const Symbol def, Symbol* content, const size_t size);
+struct Tape init_tape_full(const Symbol def, Symbol* content, const size_t size);
 
-struct Tape* init_tape(const Symbol def);
+struct Tape init_tape(const Symbol def);
 
 void left(struct Tape* const tape);
 

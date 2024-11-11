@@ -9,20 +9,18 @@ static void set_default(Symbol* const start, const size_t length, const Symbol d
     }
 }
 
-struct Tape* init_tape_full(const Symbol def, Symbol* content, const size_t size) {
-    struct Tape* const tape = malloc(sizeof *tape);
-    
-    tape->content = content;
-
-    tape->size = size;
-
-    tape->def = def;
-    tape->cursor = size / 2;
+struct Tape init_tape_full(const Symbol def, Symbol* content, const size_t size) {
+    struct Tape const tape = {
+        .content = content,
+        .size = size,
+        .def = def,
+        .cursor = size / 2
+    };
 
     return tape;
 }
 
-struct Tape* init_tape(const Symbol def) {
+struct Tape init_tape(const Symbol def) {
     const size_t size = 16;
     Symbol* const content = malloc(sizeof(Symbol) * size);
 
