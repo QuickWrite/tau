@@ -22,6 +22,8 @@ struct Head {
     char* end_state;
 };
 
+static char* halt = "HALT";
+
 static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbols) {
     size_t allocated = 16;
     *symbols = malloc(sizeof(Symbol) * allocated);
@@ -208,6 +210,12 @@ static void parse_head(struct Lexer* const lexer, struct Head* head) {
     if (head->symbol_len == 0) {
         fprintf(stderr, "A tape needs to have symbols.\n");
         exit(10);
+    }
+
+    if(head->end_state == NULL) {
+        head->end_state = halt;
+
+        fprintf(stdout, "End state not defined. Assuming 'HALT' as end state.\n");
     }
 
     // If the tape is larger than 0, the tape needs to be corrected.
@@ -540,7 +548,10 @@ struct TuringMachine* parse(const char* const file_name) {
     // Free the head
     free(head.symbols);
     
-    free(head.end_state);
+    if(head.end_state != halt) {
+        free(head.end_state);
+    }
+    
     free(head.start_state);
 
     return machine;
