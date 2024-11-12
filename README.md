@@ -36,5 +36,18 @@ C {
 }
 ```
 
+The program is separated into two different parts: The **head** and the **body**. They are being separated by a `---` (this can have a variable length as long as it contains at least one `-`).
+
+- **Head**: The head specifies different aspects of the Turing Machine:
+    | Name      | Value           | Description                                               | Required | Default                  |
+    |-----------|-----------------|-----------------------------------------------------------|----------|--------------------------|
+    | `symbols` | List of symbols | The different symbols that the Turing Machine should use. | true     | ---                      |
+    | `blank`   | Symbol          | The symbol that should be used on the tape by default     | false    | First element in symbols |
+    | `start`   | Identifier      | The state                                                 | true     | ---                      |
+    | `end`     | Identifier      |                                                           | false    | "HALT"                   |
+    | `tape`    | List of symbols |                                                           | false    | A list of blanks         |
+
+- **Body**: The body contains the different states that the Turing Machine can assume. The end state does not have to be defined.
+
 ## License
 This project is licensed under the [MIT](LICENSE) license.
