@@ -218,6 +218,15 @@ static void parse_head(struct Lexer* const lexer, struct Head* head) {
         fprintf(stdout, "End state not defined. Assuming 'HALT' as end state.\n");
     }
 
+    if(head->blank_defined) {
+        for(size_t i = 0; i < head->symbol_len; ++i) {
+            if(head->blank == head->symbols[i]) {
+                head->blank = i;
+                break;
+            }
+        }
+    }
+
     // If the tape is larger than 0, the tape needs to be corrected.
     if(head->tape_len > 0) {
         for(size_t i = 0; i < head->tape_len; ++i) {
