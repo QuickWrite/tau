@@ -90,7 +90,7 @@ void print(const struct Tape* const tape){
         printf("%i,", tape->content[i]);
     }
 
-    printf("\nsize: %lli\n", tape->size);
+    printf("\nsize: %zu\n", tape->size);
     printf("default: %i\n", tape->def);
-    printf("cursor: %lli\n", tape->cursor);    
+    printf("cursor: %zu\n", tape->cursor);    
 }

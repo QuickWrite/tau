@@ -347,7 +347,7 @@ void parse_state(struct Lexer* const lexer, struct IntermediateState* state, con
             exit(10);
         }
 
-        size_t position = lexer->curr_token.type == TOK_UNDERSCORE ? -1 : check_symbol(symbols, symbol_len, atoi(lexer->curr_token.content));
+        size_t position = lexer->curr_token.type == TOK_UNDERSCORE ? (size_t)-1 : check_symbol(symbols, symbol_len, atoi(lexer->curr_token.content));
 
         if(lexer->curr_token.type == TOK_NUMBER) {
             if (position == (size_t)-1) {

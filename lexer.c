@@ -49,7 +49,7 @@ char* get_identifier(FILE* const fptr, int c) {
 
     buf[0] = c;
 
-    int i = 1;
+    size_t i = 1;
     for(; i < 255; ++i) {
         c = getc(fptr);
 
