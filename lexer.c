@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#define new_token(name) (struct Token){.type = TOK_EQUALS}
+
 struct Lexer init_lexer(const char* const fileName) {
     FILE* fptr = fopen(fileName, "r");
 
@@ -125,41 +127,39 @@ void next_token(struct Lexer* const lexer) {
         return;
         
     case '=':
-        next = (struct Token){.type = TOK_EQUALS};
+        next = new_token(TOK_EQUALS);
         break;
     case ',':
-        next = (struct Token){.type = TOK_COMMA};
+        next = new_token(TOK_COMMA);
         break;
     case '_':
-        next = (struct Token){.type = TOK_UNDERSCORE};
+        next = new_token(TOK_UNDERSCORE);
         break;
     case '{':
-        next = (struct Token){.type = TOK_OPEN_CURLY};
+        next = new_token(TOK_OPEN_CURLY);
         break;
     case '}':
-        next = (struct Token){.type = TOKEN_CLOSE_CURLY};
+        next = new_token(TOKEN_CLOSE_CURLY);
         break;
 
     case '-':
         skip_delimiter(lexer->fptr);
 
-        next = (struct Token){.type = TOKEN_DELIMITER};
+        next = new_token(TOKEN_DELIMITER);
         break;
 
     default:
         if(isalpha(c)) {
-            next = (struct Token){
-                .type = TOK_IDENTIFIER, 
-                .content = get_identifier(lexer->fptr, c)
-            };
+            next = new_token(TOK_IDENTIFIER);
+            next.content = get_identifier(lexer->fptr, c);
+
             break;
         }
 
         if(isdigit(c)) {
-            next = (struct Token){
-                .type = TOK_NUMBER, 
-                .content = get_number(lexer->fptr, c)
-            };
+            next = new_token(TOK_NUMBER);
+            next.content = get_number(lexer->fptr, c);
+            
             break;
         }
 
