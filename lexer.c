@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#define new_token(name) (struct Token){.type = TOK_EQUALS}
+#define new_token(name) (struct Token){.type = name}
 
 struct Lexer init_lexer(const char* const fileName) {
     FILE* fptr = fopen(fileName, "r");
