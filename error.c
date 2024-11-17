@@ -51,8 +51,8 @@ static struct PositionData get_position(FILE *fptr) {
 
 #define calc_chars(number) (int)((ceil(log10(number))+1)*sizeof(char))
 
-void print_parser_error(FILE* fptr, const char* file_name, const char* const error_message) {
-    fprintf(stderr, "ERROR: %s\n", error_message);
+void print_parser_error(FILE* fptr, const char* file_name, char* error_type, const char* const error_message) {
+    fprintf(stderr, "ERROR: %s\n", error_type);
     struct PositionData position = get_position(fptr);
 
     fprintf(stderr, "--> %s:%u:%u\n", file_name, position.line + 1, position.line_position + 1);
@@ -69,5 +69,5 @@ void print_parser_error(FILE* fptr, const char* file_name, const char* const err
     memset(position_whitespace, ' ', position.line_position);
     position_whitespace[position.line_position] = '\0';
 
-    fprintf(stderr, "%s | %s^\n", start_whitespace, position_whitespace);
+    fprintf(stderr, "%s | %s^ %s\n", start_whitespace, position_whitespace, error_message);
 }
