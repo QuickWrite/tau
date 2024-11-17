@@ -17,10 +17,12 @@ enum TokenType {
 struct Token {
     enum TokenType type;
     char* content;
+    size_t position;
 };
 
 struct Lexer {
     FILE* fptr;
+    const char* file_name;
 
     struct Token curr_token;
     struct Token next_token;   

@@ -4,17 +4,18 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#define new_token(name) (struct Token){.type = name}
+#define new_token(name) (struct Token){.type = name, .position = ftell(lexer->fptr)}
 
-struct Lexer init_lexer(const char* const fileName) {
-    FILE* fptr = fopen(fileName, "r");
+struct Lexer init_lexer(const char* const file_name) {
+    FILE* fptr = fopen(file_name, "r");
 
     if(fptr == NULL) {
         return (struct Lexer){0};
     }
 
     struct Lexer lexer = {
-        .fptr = fptr
+        .fptr = fptr,
+        .file_name = file_name
     };
 
     next_token(&lexer);
