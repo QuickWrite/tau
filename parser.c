@@ -5,8 +5,15 @@
 #include <string.h>
 
 #include "lexer.h"
+#include "error.h"
 
 #define TO_END goto end
+
+#define CHECK_TOKEN(token_name, message) if (lexer->curr_token.type != token_name) { \
+            fseek(lexer->fptr, lexer->curr_token.position, SEEK_SET); \
+            print_parser_error(lexer->fptr, lexer->file_name, "Invalid Token", message); \
+            exit(10); \
+        }
 
 struct Head {
     Symbol blank;
@@ -40,12 +47,7 @@ static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbol
             exit(10);
         }
 
-        if (lexer->curr_token.type != TOK_NUMBER) {
-            // TODO: Way better error
-
-            fprintf(stderr, "Lists currently only support numbers.\n");
-            exit(10);
-        }
+        CHECK_TOKEN(TOK_NUMBER, "Lists currently only support numbers.");
 
         if(allocated < size + 1) {
             *symbols = realloc(*symbols, sizeof(Symbol) * allocated * 2);
@@ -87,12 +89,7 @@ static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbol
 static void parse_statement(struct Lexer* const lexer, struct Head* head, const char* const name) {
     next_token(lexer);
 
-    if (lexer->curr_token.type != TOK_EQUALS) {
-        // TODO: Way better error
-
-        fprintf(stderr, "Statement has to have a `=`.\n");
-        exit(10);
-    }
+    CHECK_TOKEN(TOK_EQUALS, "Statement has to have a `=`.");
     
     if(strcmp(name, "blank") == 0) {
         if (head->blank_defined) {
@@ -104,10 +101,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
 
         next_token(lexer);
 
-        if (lexer->curr_token.type != TOK_NUMBER) {
-            fprintf(stderr, "Content of 'blank' has to be a number.\n");
-            exit(10);
-        }
+        CHECK_TOKEN(TOK_NUMBER, "Content of 'blank' has to be a number.");
         
         head->blank = atoi(lexer->curr_token.content);
         head->blank_defined = true;
@@ -125,10 +119,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
 
         next_token(lexer);
 
-        if (lexer->curr_token.type != TOK_IDENTIFIER) {
-            fprintf(stderr, "Content of 'start' has to be an identifier.\n");
-            exit(10);
-        }
+        CHECK_TOKEN(TOK_IDENTIFIER, "Content of 'start' has to be an identifier.");
 
         head->start_state = lexer->curr_token.content;
 
@@ -143,10 +134,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
 
         next_token(lexer);
 
-        if (lexer->curr_token.type != TOK_IDENTIFIER) {
-            fprintf(stderr, "Content of 'end' has to be an identifier.\n");
-            exit(10);
-        }
+        CHECK_TOKEN(TOK_IDENTIFIER, "Content of 'end' has to be an identifier.");
 
         head->end_state = lexer->curr_token.content;
 
@@ -281,22 +269,21 @@ size_t check_symbol(const Symbol* const symbols, const size_t symbol_len, const 
 }
 
 void parse_rule(struct Lexer* const lexer, struct IntermediateRule* rule) {
-    if(lexer->curr_token.type != TOK_NUMBER) {
-        fprintf(stderr, "Only numbers are supported as Symbols.\n");
-        exit(10);
-    }
+    CHECK_TOKEN(TOK_NUMBER, "Only numbers are supported as Symbols.");
+
     rule->rule.write_symbol = atoi(lexer->curr_token.content);
     free(lexer->curr_token.content);
 
     next_token(lexer);
-    if (lexer->curr_token.type != TOK_COMMA) {
-        fprintf(stderr, "A rule has to be separated with commas.\n");
-        exit(10);
-    }
+
+    CHECK_TOKEN(TOK_COMMA, "A rule has to be separated with commas.");
     
     next_token(lexer);
     enum Direction dir;
-    if(lexer->curr_token.type != TOK_IDENTIFIER || (dir = stdirection(lexer->curr_token.content)) == (enum Direction)-1) {
+
+    CHECK_TOKEN(TOK_IDENTIFIER, "A direction has to be RIGHT/R, LEFT/L, STAY/S");
+
+    if((dir = stdirection(lexer->curr_token.content)) == (enum Direction)-1) {
         fprintf(stderr, "The direction of a rule has to be RIGHT/R, LEFT/L, STAY/S. \"%s\" is not allowed.\n", lexer->curr_token.content);
         exit(10);
     }
@@ -306,33 +293,22 @@ void parse_rule(struct Lexer* const lexer, struct IntermediateRule* rule) {
     rule->rule.direction = dir;
 
     next_token(lexer);
-    if (lexer->curr_token.type != TOK_COMMA) {
-        fprintf(stderr, "A rule has to be separated with commas.\n");
-        exit(10);
-    }
+
+    CHECK_TOKEN(TOK_COMMA, "A rule has to be separated with commas.");
 
     next_token(lexer);
-    if(lexer->curr_token.type != TOK_IDENTIFIER) {
-        fprintf(stderr, "The next state has to be an identifier.\n");
-        exit(10);
-    }
+    CHECK_TOKEN(TOK_IDENTIFIER, "The next state has to be an identifier.");
 
     rule->next_state = lexer->curr_token.content;
 }
 
 void parse_state(struct Lexer* const lexer, struct IntermediateState* state, const Symbol* const symbols, const size_t symbol_len) {
-    if(lexer->curr_token.type != TOK_IDENTIFIER) {
-        fprintf(stderr, "State declaration has to begin with an identifier.\n");
-        exit(10);
-    }
+    CHECK_TOKEN(TOK_IDENTIFIER, "State declaration has to begin with an identifier.");
 
     state->name = lexer->curr_token.content;
 
     next_token(lexer);
-    if(lexer->curr_token.type != TOK_OPEN_CURLY) {
-        fprintf(stderr, "State declaration has to open with '{'. %i\n", lexer->curr_token.type);
-        exit(10);
-    }
+    CHECK_TOKEN(TOK_OPEN_CURLY, "State declaration has to open with '{'.");
     
     state->rules = calloc(symbol_len, sizeof(struct IntermediateRule));
     if (state->rules == NULL) {
@@ -343,6 +319,7 @@ void parse_state(struct Lexer* const lexer, struct IntermediateState* state, con
     while (lexer->next_token.type != TOKEN_CLOSE_CURLY && lexer->next_token.type != TOK_EOF) {
         next_token(lexer);
         if(lexer->curr_token.type != TOK_NUMBER && lexer->curr_token.type != TOK_UNDERSCORE) {
+            // TODO: Add to new error system
             fprintf(stderr, "Only numbers are supported as Symbols. The default can be declared with `_`.\n");
             exit(10);
         }
@@ -368,15 +345,14 @@ void parse_state(struct Lexer* const lexer, struct IntermediateState* state, con
         }
 
         next_token(lexer);
-        if(lexer->curr_token.type != TOK_EQUALS) {
-            fprintf(stderr, "Declaration of statement has to be in the form of <symbol> = <new symbol>, <mov>, <next>\n");
-            exit(10);
-        }
+        CHECK_TOKEN(TOK_EQUALS, "Declaration of statement has to be in the form of <symbol> = <new symbol>, <mov>, <next>.");
 
         next_token(lexer);
         parse_rule(lexer, position == (size_t)-1 ? &state->def : &state->rules[position]);
     }
     next_token(lexer);
+
+    CHECK_TOKEN(TOKEN_CLOSE_CURLY, "State declaration has to end with a }, but found EOF.");
 }
 
 size_t parse_body(struct Lexer* const lexer, struct IntermediateState* states[], const struct Head* const head) {
