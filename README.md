@@ -49,5 +49,48 @@ The program is separated into two different parts: The **head** and the **body**
 
 - **Body**: The body contains the different states that the Turing Machine can assume. The end state does not have to be defined.
 
+  To define a state the identifier of the state has to be written and then the logic has to be wrapped inside of curly brackets:
+  ```
+  NAME {
+    # The logic of the state (aka. the rules)
+  }
+  ```
+
+  Each rule can be defined as 
+  ```
+  <Curr Symbol> = <New Symbol>, <Direction>, <Next State>
+  ```
+  so for example this would be valid:
+  ```
+      1    =   0,      RIGHT,      A
+  # Symbol | Symbol | Direction | State
+  ```
+  And it would mean: If there is a `1` on the tape, then the Turing Machine should write a `0`, go right and switch to the state with the name `A`.
+
+  > [!IMPORTANT]
+  > Every single state has to be exhaustive. This means that if there are $n$ symbols defined, all different possibilities have to be defined.
+
+  If all other scenarios are the same, then the `else`-syntax can be used:
+  ```
+  _ = 1, LEFT, B 
+  ```
+  And it would mean: In any other scenario the Turing Machine should write a `1`, go left and switch to the state with the name `B`.
+
+  ----
+
+  A state could look like this:
+  ```
+  A {
+    1 = 0, RIGHT, A
+    _ = 1, LEFT, B
+  }
+  ```
+
+> [!NOTE]
+> Whitespace is nearly irrellevant. This means that constructs like this would also be possible (but isn't recommended):
+> ```
+> A{1=0,RIGHT,A _=1,LEFT,B}
+> ```
+
 ## License
 This project is licensed under the [MIT](LICENSE) license.
