@@ -67,8 +67,7 @@ The program is separated into two different parts: The **head** and the **body**
   ```
   And it would mean: If there is a `1` on the tape, then the Turing Machine should write a `0`, go right and switch to the state with the name `A`.
 
-  > [!IMPORTANT]
-  > Every single state has to be exhaustive. This means that if there are $n$ symbols defined, all different possibilities have to be defined.
+  **Important:** Every single state has to be exhaustive. This means that if there are $n$ symbols defined, all $n$ possibilities have to be defined.
 
   If all other scenarios are the same, then the `else`-syntax can be used:
   ```
