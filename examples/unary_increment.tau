@@ -1,0 +1,16 @@
+# Increments the current unary number on the tape by one
+
+symbols = 0,1
+blank = 0
+start = q0
+
+# The tape can be any unary number
+# Here the number 4 is being used as an example:
+tape = 1,1,1,1
+
+----
+
+q0 {
+    0 = 1, RIGHT, HALT
+    1 = 1, RIGHT, q0
+}
