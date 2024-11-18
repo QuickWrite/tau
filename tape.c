@@ -55,7 +55,7 @@ void left(struct Tape* const tape) {
 }
 
 void right(struct Tape* const tape) {
-    if(!(tape->size < ++(tape->cursor))) {
+    if(!(tape->size <= ++(tape->cursor))) {
         return;
     }
 
