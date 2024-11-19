@@ -140,13 +140,13 @@ void next_token(struct Lexer* const lexer) {
         next = new_token(TOK_OPEN_CURLY);
         break;
     case '}':
-        next = new_token(TOKEN_CLOSE_CURLY);
+        next = new_token(TOK_CLOSE_CURLY);
         break;
 
     case '-':
         skip_delimiter(lexer->fptr);
 
-        next = new_token(TOKEN_DELIMITER);
+        next = new_token(TOK_DELIMITER);
         break;
 
     default:

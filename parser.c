@@ -172,7 +172,7 @@ static void parse_head(struct Lexer* const lexer, struct Head* head) {
 
     next_token(lexer);
 
-    for (;lexer->curr_token.type != TOKEN_DELIMITER; next_token(lexer)) {
+    for (;lexer->curr_token.type != TOK_DELIMITER; next_token(lexer)) {
         if (lexer->curr_token.type == TOK_EOF) {
             // TODO: Way better error
 
@@ -316,7 +316,7 @@ void parse_state(struct Lexer* const lexer, struct IntermediateState* state, con
         exit(1);
     }
 
-    while (lexer->next_token.type != TOKEN_CLOSE_CURLY && lexer->next_token.type != TOK_EOF) {
+    while (lexer->next_token.type != TOK_CLOSE_CURLY && lexer->next_token.type != TOK_EOF) {
         next_token(lexer);
         if(lexer->curr_token.type != TOK_NUMBER && lexer->curr_token.type != TOK_UNDERSCORE) {
             // TODO: Add to new error system
@@ -352,7 +352,7 @@ void parse_state(struct Lexer* const lexer, struct IntermediateState* state, con
     }
     next_token(lexer);
 
-    CHECK_TOKEN(TOKEN_CLOSE_CURLY, "State declaration has to end with a }, but found EOF.");
+    CHECK_TOKEN(TOK_CLOSE_CURLY, "State declaration has to end with a }, but found EOF.");
 }
 
 size_t parse_body(struct Lexer* const lexer, struct IntermediateState* states[], const struct Head* const head) {
