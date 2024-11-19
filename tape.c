@@ -14,7 +14,7 @@ struct Tape init_tape_full(const Symbol def, Symbol* content, const size_t size)
         .content = content,
         .size = size,
         .def = def,
-        .cursor = size / 2
+        .cursor = 0
     };
 
     return tape;
@@ -26,7 +26,10 @@ struct Tape init_tape(const Symbol def) {
 
     set_default(content, size, def);
 
-    return init_tape_full(def, content, size);
+    struct Tape tape = init_tape_full(def, content, size);
+    tape.cursor = size / 2;
+
+    return tape;
 }
 
 void left(struct Tape* const tape) {
