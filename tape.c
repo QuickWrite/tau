@@ -9,15 +9,13 @@ static void set_default(Symbol* const start, const size_t length, const Symbol d
     }
 }
 
-struct Tape init_tape_full(const Symbol def, Symbol* content, const size_t size) {
-    struct Tape const tape = {
+inline struct Tape init_tape_full(const Symbol def, Symbol* content, const size_t size) {
+    return (struct Tape){
         .content = content,
         .size = size,
         .def = def,
         .cursor = 0
     };
-
-    return tape;
 }
 
 struct Tape init_tape(const Symbol def) {
