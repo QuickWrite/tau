@@ -112,7 +112,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
 
         next_token(lexer);
 
-        CHECK_TOKEN(TOK_IDENTIFIER, "Content of 'blank' has to be a number.");
+        CHECK_TOKEN(TOK_IDENTIFIER, "Content of 'blank' has to be an identifier.");
         
         head->blank = lexer->curr_token.content;
         head->blank_defined = true;
