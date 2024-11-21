@@ -6,6 +6,7 @@
 
 #include "lexer.h"
 #include "error.h"
+#include "tape.h"
 
 #define TO_END goto end
 
@@ -16,12 +17,14 @@
         }
 
 struct Head {
-    Symbol blank;
+    char* blank;
+    Symbol blank_number;
     bool blank_defined;
 
-    Symbol* symbols;
+    char** symbols;
     size_t symbol_len;
 
+    char** tape_elems;
     Symbol* tape;
     size_t tape_len;
 
@@ -31,7 +34,17 @@ struct Head {
 
 static char* halt = "HALT";
 
-static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbols) {
+inline static size_t find_symbol(const struct Head* const head, const char* const name) {
+    for(size_t i = 0; i < head->symbol_len; ++i) {
+        if(strcmp(head->symbols[i], name) == 0) {
+            return i;
+        }
+    }
+
+    return (size_t)-1;
+}
+
+static size_t parse_symbol_list(struct Lexer* const lexer, char*** const symbols) {
     size_t allocated = 16;
     *symbols = malloc(sizeof(Symbol) * allocated);
 
@@ -47,7 +60,7 @@ static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbol
             exit(10);
         }
 
-        CHECK_TOKEN(TOK_NUMBER, "Lists currently only support numbers.");
+        CHECK_TOKEN(TOK_IDENTIFIER, "A list can only contain identifiers.");
 
         if(allocated < size + 1) {
             *symbols = realloc(*symbols, sizeof(Symbol) * allocated * 2);
@@ -60,10 +73,8 @@ static size_t parse_symbol_list(struct Lexer* const lexer, Symbol** const symbol
             allocated *= 2;
         }
 
-        (*symbols)[size] = atoi(lexer->curr_token.content);
+        (*symbols)[size] = lexer->curr_token.content;
         ++size;
-
-        free(lexer->curr_token.content);
 
         if (lexer->next_token.type != TOK_COMMA) {
             break;
@@ -101,12 +112,10 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
 
         next_token(lexer);
 
-        CHECK_TOKEN(TOK_NUMBER, "Content of 'blank' has to be a number.");
+        CHECK_TOKEN(TOK_IDENTIFIER, "Content of 'blank' has to be a number.");
         
-        head->blank = atoi(lexer->curr_token.content);
+        head->blank = lexer->curr_token.content;
         head->blank_defined = true;
-
-        free(lexer->curr_token.content);
 
         TO_END;
     }
@@ -158,7 +167,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
             exit(10);
         }
 
-        head->tape_len = parse_symbol_list(lexer, &head->tape);
+        head->tape_len = parse_symbol_list(lexer, &head->tape_elems);
 
         TO_END;
     }
@@ -207,24 +216,13 @@ static void parse_head(struct Lexer* const lexer, struct Head* head) {
     }
 
     if(head->blank_defined) {
-        for(size_t i = 0; i < head->symbol_len; ++i) {
-            if(head->blank == head->symbols[i]) {
-                head->blank = i;
-                break;
-            }
-        }
+        head->blank_number = find_symbol(head, head->blank);
     }
 
     // If the tape is larger than 0, the tape needs to be corrected.
     if(head->tape_len > 0) {
         for(size_t i = 0; i < head->tape_len; ++i) {
-            for(size_t j = 0; j < head->symbol_len; ++j) {
-                if(head->tape[i] == head->symbols[j]) {
-                    head->tape[i] = j;
-                    break;
-                }
-            }
-            // 
+            head->tape[i] = (Symbol)find_symbol(head, head->tape_elems[i]);
         }
     }
 }
@@ -255,23 +253,14 @@ enum Direction stdirection(const char* const string) {
     return -1;
 }
 
-size_t check_symbol(const Symbol* const symbols, const size_t symbol_len, const Symbol test) {
-    for(size_t i = 0; i < symbol_len; ++i) {
-        if(symbols[i] == test) {
-            return i;
-        }
+void parse_rule(struct Lexer* const lexer, const struct Head* head, struct IntermediateRule* rule) {
+    CHECK_TOKEN(TOK_IDENTIFIER, "A symbol is an identifier.");
+
+    rule->rule.write_symbol = find_symbol(head, lexer->curr_token.content);
+    if(rule->rule.write_symbol == -1) {
+        fprintf(stderr, "Did not find rule with name '%s'.", lexer->curr_token.content);
+        exit(10);
     }
-
-    // Even though a size_t does not have a -1, 
-    // it is improbable that the highest number 
-    // of elements is the max value of size_t.
-    return -1;
-}
-
-void parse_rule(struct Lexer* const lexer, struct IntermediateRule* rule) {
-    CHECK_TOKEN(TOK_NUMBER, "Only numbers are supported as Symbols.");
-
-    rule->rule.write_symbol = atoi(lexer->curr_token.content);
     free(lexer->curr_token.content);
 
     next_token(lexer);
@@ -302,7 +291,7 @@ void parse_rule(struct Lexer* const lexer, struct IntermediateRule* rule) {
     rule->next_state = lexer->curr_token.content;
 }
 
-void parse_state(struct Lexer* const lexer, struct IntermediateState* state, const Symbol* const symbols, const size_t symbol_len) {
+void parse_state(struct Lexer* const lexer, const struct Head* head, struct IntermediateState* state) {
     CHECK_TOKEN(TOK_IDENTIFIER, "State declaration has to begin with an identifier.");
 
     state->name = lexer->curr_token.content;
@@ -310,7 +299,7 @@ void parse_state(struct Lexer* const lexer, struct IntermediateState* state, con
     next_token(lexer);
     CHECK_TOKEN(TOK_OPEN_CURLY, "State declaration has to open with '{'.");
     
-    state->rules = calloc(symbol_len, sizeof(struct IntermediateRule));
+    state->rules = calloc(head->symbol_len, sizeof(struct IntermediateRule));
     if (state->rules == NULL) {
         fprintf(stderr, "Not enough memory could be allocated.\n");
         exit(1);
@@ -318,15 +307,15 @@ void parse_state(struct Lexer* const lexer, struct IntermediateState* state, con
 
     while (lexer->next_token.type != TOK_CLOSE_CURLY && lexer->next_token.type != TOK_EOF) {
         next_token(lexer);
-        if(lexer->curr_token.type != TOK_NUMBER && lexer->curr_token.type != TOK_UNDERSCORE) {
+        if(lexer->curr_token.type != TOK_IDENTIFIER && lexer->curr_token.type != TOK_UNDERSCORE) {
             // TODO: Add to new error system
-            fprintf(stderr, "Only numbers are supported as Symbols. The default can be declared with `_`.\n");
+            fprintf(stderr, "Only identifiers are supported as Symbols. The default can be declared with `_`.\n");
             exit(10);
         }
 
-        size_t position = lexer->curr_token.type == TOK_UNDERSCORE ? (size_t)-1 : check_symbol(symbols, symbol_len, atoi(lexer->curr_token.content));
+        size_t position = lexer->curr_token.type == TOK_UNDERSCORE ? (size_t)-1 : find_symbol(head, lexer->curr_token.content);
 
-        if(lexer->curr_token.type == TOK_NUMBER) {
+        if(lexer->curr_token.type == TOK_IDENTIFIER) {
             if (position == (size_t)-1) {
                 fprintf(stderr, "Symbol %s does not exist in symbol list.\n", lexer->curr_token.content);
                 exit(10);
@@ -348,7 +337,7 @@ void parse_state(struct Lexer* const lexer, struct IntermediateState* state, con
         CHECK_TOKEN(TOK_EQUALS, "Declaration of statement has to be in the form of <symbol> = <new symbol>, <mov>, <next>.");
 
         next_token(lexer);
-        parse_rule(lexer, position == (size_t)-1 ? &state->def : &state->rules[position]);
+        parse_rule(lexer, head, position == (size_t)-1 ? &state->def : &state->rules[position]);
     }
     next_token(lexer);
 
@@ -373,7 +362,7 @@ size_t parse_body(struct Lexer* const lexer, struct IntermediateState* states[],
             size = size * 2;
         }
 
-        parse_state(lexer, &(*states)[amount], head->symbols, head->symbol_len);
+        parse_state(lexer, head, &(*states)[amount]);
         next_token(lexer);
         ++amount;
     }
@@ -525,14 +514,17 @@ struct TuringMachine* parse(const char* const file_name) {
             symbols[i] = head.tape[i];
         }
 
-        machine->tape = init_tape_full(head.blank, symbols, head.tape_len);
+        machine->tape = init_tape_full(head.blank_number, symbols, head.tape_len);
     } else {
-        machine->tape = init_tape(head.blank);
+        machine->tape = init_tape(head.blank_number);
     }
 
+    machine->tape.symbol_names = head.symbols;
+
     // Free the head
-    free(head.symbols);
-    
+    free(head.blank);
+    free(head.tape_elems);
+
     if(head.end_state != halt) {
         free(head.end_state);
     }

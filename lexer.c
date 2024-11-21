@@ -85,30 +85,6 @@ char* get_identifier(FILE* const fptr, int c) {
     return buf;
 }
 
-char* get_number(FILE* const fptr, int c) {
-    char* buf = calloc(17, sizeof(char));
-    buf[0] = c;
-
-    int i = 1;
-    for(; i < 16; ++i) {
-        c = getc(fptr);
-
-        if(!isdigit(c)) {
-            break;
-        }
-
-        buf[i] = c;
-    }
-
-    if(i > 16) {
-        fprintf(stderr, "Numbers cannot be larger than '16' characters long.");
-    }
-    
-    ungetc(c, fptr);
-
-    return buf;
-}
-
 void next_token(struct Lexer* const lexer) {
     skip_whitespace(lexer->fptr);
 
@@ -150,21 +126,14 @@ void next_token(struct Lexer* const lexer) {
         break;
 
     default:
-        if(isalpha(c)) {
+        if(isalpha(c) || isdigit(c)) {
             next = new_token(TOK_IDENTIFIER);
             next.content = get_identifier(lexer->fptr, c);
 
             break;
         }
 
-        if(isdigit(c)) {
-            next = new_token(TOK_NUMBER);
-            next.content = get_number(lexer->fptr, c);
-            
-            break;
-        }
-
-        assert(0 && "This is still TODO");
+        assert(0 && "A token that does not exist was being parsed.");
 
         // Something went wrong
         break;

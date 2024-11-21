@@ -5,7 +5,6 @@
 enum TokenType {
     TOK_EOF = 0,
     TOK_IDENTIFIER,
-    TOK_NUMBER,
     TOK_EQUALS,
     TOK_COMMA,
     TOK_UNDERSCORE,

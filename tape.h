@@ -8,6 +8,8 @@ struct Tape {
     Symbol* content;
     size_t size;
 
+    char** symbol_names;
+
     //
 
     Symbol def;

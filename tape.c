@@ -88,7 +88,7 @@ void print(const struct Tape* const tape){
     printf("Contents of tape: \n");
     printf("Content: ");
     for (size_t i = 0; i < tape->size; i++) {
-        printf("%i,", tape->content[i]);
+        printf("%s,", tape->symbol_names[tape->content[i]]);
     }
 
     printf("\nsize: %zu\n", tape->size);
