@@ -1,0 +1,16 @@
+# The standard "Hello World" program in Tau
+
+symbols = 0, HELLO, WORLD
+blank = 0
+start = HELLO
+tape = 0,0
+
+----
+
+HELLO {
+    _ = HELLO, RIGHT, WORLD
+}
+
+WORLD {
+    _ = WORLD, RIGHT, HALT
+}
