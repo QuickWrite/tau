@@ -221,6 +221,8 @@ static void parse_head(struct Lexer* const lexer, struct Head* head) {
 
     // If the tape is larger than 0, the tape needs to be corrected.
     if(head->tape_len > 0) {
+        head->tape = malloc(sizeof(Symbol) * head->tape_len);
+
         for(size_t i = 0; i < head->tape_len; ++i) {
             head->tape[i] = (Symbol)find_symbol(head, head->tape_elems[i]);
         }
