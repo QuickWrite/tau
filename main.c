@@ -1,7 +1,6 @@
 #include <stdio.h>
 
 #include "turingmachine.h"
-#include "lexer.h"
 #include "parser.h"
 
 int main(const int argc, const char** const argv) {
