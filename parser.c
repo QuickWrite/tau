@@ -97,18 +97,18 @@ static size_t parse_symbol_list(struct Lexer* const lexer, char*** const symbols
     return size;
 }
 
+#define CHECK_MULTIPLE_DEFINITION(check, message) if (check) { \
+            print_parser_error(lexer->fptr, lexer->file_name, "Multiple Definition", message); \
+            exit(10); \
+        }
+
 static void parse_statement(struct Lexer* const lexer, struct Head* head, const char* const name) {
     next_token(lexer);
 
     CHECK_TOKEN(TOK_EQUALS, "Statement has to have a `=`.");
     
     if(strcmp(name, "blank") == 0) {
-        if (head->blank_defined) {
-            fprintf(stderr, "Blank specified multiple times.\n");
-            exit(10);
-        }
-
-        // TODO: Add identifier support
+        CHECK_MULTIPLE_DEFINITION(head->blank_defined, "Blank specified multiple times.");
 
         next_token(lexer);
 
@@ -121,10 +121,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
     }
 
     if (strcmp(name, "start") == 0) {
-        if (head->start_state != 0) {
-            fprintf(stderr, "Start state specified multiple times.\n");
-            exit(10);
-        }
+        CHECK_MULTIPLE_DEFINITION(head->start_state != 0, "Start state specified multiple times.");
 
         next_token(lexer);
 
@@ -136,10 +133,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
     }
     
     if (strcmp(name, "end") == 0) {
-        if (head->end_state != 0) {
-            fprintf(stderr, "End state specified multiple times.\n");
-            exit(10);
-        }
+        CHECK_MULTIPLE_DEFINITION(head->end_state != 0, "End state specified multiple times.");
 
         next_token(lexer);
 
@@ -151,10 +145,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
     }
 
     if (strcmp(name, "symbols") == 0) {
-        if (head->symbol_len != 0) {
-            fprintf(stderr, "Symbols were specified multiple times.\n");
-            exit(10);
-        }
+        CHECK_MULTIPLE_DEFINITION(head->symbol_len != 0, "Symbols were specified multiple times.");
 
         head->symbol_len = parse_symbol_list(lexer, &head->symbols);
 
@@ -162,10 +153,7 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
     }
 
     if (strcmp(name, "tape") == 0) {
-        if (head->tape_len != 0) {
-            fprintf(stderr, "Tape was specified multiple times.\n");
-            exit(10);
-        }
+        CHECK_MULTIPLE_DEFINITION(head->tape_len != 0, "Tape was specified multiple times.");
 
         head->tape_len = parse_symbol_list(lexer, &head->tape_elems);
 
@@ -175,6 +163,8 @@ static void parse_statement(struct Lexer* const lexer, struct Head* head, const 
 end:
     free((char*)name);
 }
+
+#undef CHECK_MULTIPLE_DEFINITION
 
 static void parse_head(struct Lexer* const lexer, struct Head* head) {
     *head = (struct Head){0};
