@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "error.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -133,10 +134,8 @@ void next_token(struct Lexer* const lexer) {
             break;
         }
 
-        assert(0 && "A token that does not exist was being parsed.");
-
-        // Something went wrong
-        break;
+        print_parser_error(lexer->fptr, lexer->file_name, "Lexer Error", "Cannot decypher this token.");
+        exit(5);
     }
 
     lexer->curr_token = lexer->next_token;
