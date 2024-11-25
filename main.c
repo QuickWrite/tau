@@ -39,7 +39,6 @@ int main(const int argc, const char** const argv) {
         fprintf(stderr, "A file path has to be provided: `tau <path>`\n");
         return 1;
     }
-    setvbuf(stdout, NULL, _IOLBF, 0);
 
     struct TuringMachine* machine = parse(argv[1]);
 
