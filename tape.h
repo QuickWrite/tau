@@ -28,5 +28,3 @@ void right(struct Tape* const tape);
 void write(struct Tape* const tape, const Symbol symbol);
 
 void free_tape(struct Tape* const tape);
-
-void print(const struct Tape* const tape);

@@ -83,15 +83,3 @@ void free_tape(struct Tape* const tape) {
 
     free(tape);
 }
-
-void print(const struct Tape* const tape){
-    printf("Contents of tape: \n");
-    printf("Content: ");
-    for (size_t i = 0; i < tape->size; i++) {
-        printf("%s,", tape->symbol_names[tape->content[i]]);
-    }
-
-    printf("\nsize: %zu\n", tape->size);
-    printf("default: %i\n", tape->def);
-    printf("cursor: %zu\n", tape->cursor);    
-}
