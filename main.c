@@ -13,8 +13,6 @@ void print_machine(const struct TuringMachine* const machine, const size_t view_
 
 
     printf("..., ");
-    setvbuf(stdout, NULL, _IOLBF, 0);
-
     for(long i = tape->cursor - (view_width / 2); i < top; ++i) {
         printf(
                 i == (long)tape->cursor ? "\033[31m%s\033[0m, " : "%s, ", 
