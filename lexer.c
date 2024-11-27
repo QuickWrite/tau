@@ -87,6 +87,7 @@ char* get_identifier(FILE* const fptr, int c) {
 }
 
 void next_token(struct Lexer* const lexer) {
+    start:
     skip_whitespace(lexer->fptr);
 
     struct Token next;
@@ -101,8 +102,7 @@ void next_token(struct Lexer* const lexer) {
         // This is a comment. It should not be returned as a token as it is completely useless for a parser
         skip_comment(lexer->fptr);
 
-        next_token(lexer);
-        return;
+        goto start;
         
     case '=':
         next = new_token(TOK_EQUALS);
