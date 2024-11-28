@@ -20,16 +20,17 @@
 %----------------------------------------------------------------------------------------
 
 \documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\newcommand{\importsection}[2]{\section{#2}
+\input{#1}}
 
 \input{structure.tex} % Include the file specifying the document structure and custom commands
 
-%----------------------------------------------------------------------------------------
-%	ASSIGNMENT INFORMATION
-%----------------------------------------------------------------------------------------
-
 \title{Tau ($\tau$) Documentation} % Title
 
-\author{QuickWrite} % Author name and email address
+\author{QuickWrite} % Author name
 
 \date{Version: 1.0.0} % Date can be abused as a Version specifier
 
