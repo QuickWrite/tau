@@ -1,0 +1,49 @@
+\subsection{What is Tau?}
+Tau is a small programming language that intends to implement a small Turing Machine.
+
+It interprets the code by parsing it, compiling it into a graph and then executing it.
+
+\subsection{Usage}
+This programming language is mainly intended for educational purposes. 
+It can be used to showcase the abilities and possibilities of a Turing Machine.
+
+Instead of just learning about Turing Machines in an abstract way, 
+people can play around and actually see what the different elements of a Turing Machine do.
+
+\subsection{Turing Machine}
+A Turing Machine is a conceptual model of computation that was proposed by the British mathematician and logician Alan Turing in 1936. 
+This abstract device helps to explore the boundaries of what can be computed and offers a basis for examining algorithms and computational methods. 
+Although it doesn't exist as a tangible machine, the Turing Machine is a cornerstone idea in the fields of computer science and mathematical logic.
+
+The main idea is to build a machine as primitive as possible with the least possible things whilst not sacrificing the possibility
+to implement any computer algorithm possible. Because of this primitive nature, many programming languages, to show that they can implement any
+computer algorithm, test if they are ``Turing Complete''.
+
+\subsubsection{Components}
+A Turing Machine consists of the following parts:
+
+\begin{enumerate}
+    \item \textbf{Tape:} \\
+    An infinite one-dimensional strip divided into cells. Each cell can hold a single symbol from a finite set of symbols (which includes a blank symbol).
+
+    The tape serves as both the input/output medium and the machine's memory.
+
+    \item \textbf{Head:} \\
+    A read/write head that moves along the tape one cell at a time.
+    It can read the symbol on the tape, write a symbol, or leave the symbol unchanged.
+
+    \item \textbf{State Register:} \\
+    Keeps track of the current state of the machine.
+    The machine has a finite set of states, one of which is designated as the starting state, and some may be designated as halting states.
+
+    \item \textbf{Transition Function:} \\
+    Defines the rules for how the machine behaves based on its current state and the symbol it reads.
+
+    The Transition function specifies the following:
+    \begin{itemize}
+        \item The new symbol to write on the tape.
+        \item The direction to move the head (left, right, or stay in place).
+        \item The next state to transition to.
+    \end{itemize}
+\end{enumerate}
+
