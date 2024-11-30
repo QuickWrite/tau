@@ -47,3 +47,121 @@ Each cell can hold a single symbol from a finite set of symbols (which includes 
 
 This is the main memory which the Turing Machine operates on and serves as both the input and output medium.
 
+\newpage
+\subsubsection{How a Turing Machine works}
+
+To understand how a Turing Machine works, it is beneficial to show an example. The example shows a Turing Machine which has a state machine
+with a ``3-state Busy Beaver''. This program shoudl create as many $1$s on the tape as possible whilst also being finite (not executing indefinitely):
+
+\begin{minipage}{0.45\textwidth}
+Let's say we have a Turing Machine with the symbols $0,1$ and the blank symbol is $0$. We also define that the starting tape consists of blank symbols.
+Now we can define a Turing Machine with a state machine so that it can do something. In this case the state machine has the current state highlighted 
+and the transitions are being defined as: \\ \code{<Tape Symbol>|<New Symbol>,<Direction>}. \\ So we define a state machine that is a solution for the ``Busy Beaver'' challenge.
+\end{minipage}
+\begin{minipage}{0.50\textwidth}
+    \centering
+    \label{fig:busybeaver-1}
+    \begin{turingmachine}{0000000}
+        \node[state, current state, initial] (A) {A};
+        \node[state, below right of=A,yshift=25] (C) {C};
+        \node[state, above right of=C,yshift=-25] (B) {B};
+
+        \node[state, accepting, below of=B,yshift=20] (HALT) {H};
+
+        \draw (A) edge[below] node{0|1,R} (B);
+        \draw (A) edge[bend right=15, left] node[xshift=-5]{1|1,L} (C);
+        
+        \draw (B) edge[loop above] node{1|1,R} (B);
+        \draw (B) edge[bend right=15, above] node{0|1,L} (A);
+
+        \draw (C) edge[bend right=15, right] node[xshift=5]{0|1,L} (B);
+        \draw (C) edge[bend right=10, above] node[xshift=10]{1|1,R} (HALT);
+    \end{turingmachine}
+    \vspace{0.2em}
+\end{minipage}
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+\begin{minipage}{0.45\textwidth}
+If we now try to determine what the Turing Machine will do next, we can check what the head is currently looking at: $0$. 
+This means that the state machine will follow the path to B, write a $1$ onto the tape and move right. 
+This means that the Turing Machine will now be in this configuration:
+\end{minipage}
+\begin{minipage}{0.50\textwidth}
+    \centering
+    \label{fig:busybeaver-2}
+    \begin{turingmachine}{0010000}
+        \node[state, initial] (A) {A};
+        \node[state, below right of=A,yshift=25] (C) {C};
+        \node[state, current state, above right of=C,yshift=-25] (B) {B};
+
+        \node[state, accepting, below of=B,yshift=20] (HALT) {H};
+
+        \draw (A) edge[below] node{0|1,R} (B);
+        \draw (A) edge[bend right=15, left] node[xshift=-5]{1|1,L} (C);
+        
+        \draw (B) edge[loop above] node{1|1,R} (B);
+        \draw (B) edge[bend right=15, above] node{0|1,L} (A);
+
+        \draw (C) edge[bend right=15, right] node[xshift=5]{0|1,L} (B);
+        \draw (C) edge[bend right=10, above] node[xshift=10]{1|1,R} (HALT);
+    \end{turingmachine}
+\end{minipage}
+
+Repeating these steps twelve times as these are mostly the same steps:
+
+\begin{minipage}{0.45\textwidth}
+After repeating this twelve times we get to this configuration where the Turing Machine is currently
+in the state C and the head currently reads the value $1$. This means that the Turing Machine will now go to state H (\code{HALT}).
+\end{minipage}
+\begin{minipage}{0.50\textwidth}
+    \centering
+    \label{fig:busybeaver-3}
+    \begin{turingmachine}{0111111}
+        \node[state, initial] (A) {A};
+        \node[state, current state, below right of=A,yshift=25] (C) {C};
+        \node[state, above right of=C,yshift=-25] (B) {B};
+
+        \node[state, accepting, below of=B,yshift=20] (HALT) {H};
+
+        \draw (A) edge[below] node{0|1,R} (B);
+        \draw (A) edge[bend right=15, left] node[xshift=-5]{1|1,L} (C);
+        
+        \draw (B) edge[loop above] node{1|1,R} (B);
+        \draw (B) edge[bend right=15, above] node{0|1,L} (A);
+
+        \draw (C) edge[bend right=15, right] node[xshift=5]{0|1,L} (B);
+        \draw (C) edge[bend right=10, above] node[xshift=10]{1|1,R} (HALT);
+    \end{turingmachine}
+\end{minipage}
+
+\par\noindent\rule{\textwidth}{0.4pt}
+
+\begin{minipage}{0.45\textwidth}
+As the state machine is currently in a accepting state (the double circle) it will stop the Turing Machine and terminate.
+It will not go to the next state nor do any modifications on the tape.
+\end{minipage}
+\begin{minipage}{0.50\textwidth}
+\begin{center}
+    \label{fig:busybeaver-halt}
+    \begin{turingmachine}{1111110}
+        \node[state, initial] (A) {A};
+        \node[state, below right of=A,yshift=25] (C) {C};
+        \node[state, above right of=C,yshift=-25] (B) {B};
+
+        \node[state, current state, accepting, below of=B,yshift=20] (HALT) {H};
+
+        \draw (A) edge[below] node{0|1,R} (B);
+        \draw (A) edge[bend right=15, left] node[xshift=-5]{1|1,L} (C);
+        
+        \draw (B) edge[loop above] node{1|1,R} (B);
+        \draw (B) edge[bend right=15, above] node{0|1,L} (A);
+
+        \draw (C) edge[bend right=15, right] node[xshift=5]{0|1,L} (B);
+        \draw (C) edge[bend right=10, above] node[xshift=10]{1|1,R} (HALT);
+    \end{turingmachine}
+\end{center}
+\end{minipage}
+
+At the end of the program the Turing Machine has stopped and written $6$ different $1$s onto the tape.
+
