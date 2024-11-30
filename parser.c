@@ -498,7 +498,6 @@ struct TuringMachine* parse(const char* const file_name) {
     struct TuringMachine* machine = calloc(1, sizeof(struct TuringMachine));
     machine->state = start;
 
-    // TODO: Add default init tape
     if(head.tape_len > 0) {
         Symbol* symbols = malloc(sizeof(Symbol) * head.tape_len);
 
