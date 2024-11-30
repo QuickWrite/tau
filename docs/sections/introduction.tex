@@ -3,7 +3,7 @@ Tau is a small programming language that intends to implement a small Turing Mac
 
 It interprets the code by parsing it, compiling it into a graph and then executing it.
 
-\subsection{Usage}
+\subsection{Motivation}
 This programming language is mainly intended for educational purposes. 
 It can be used to showcase the abilities and possibilities of a Turing Machine.
 
@@ -20,20 +20,15 @@ to implement any computer algorithm possible. Because of this primitive nature, 
 computer algorithm, test if they are ``Turing Complete''.
 
 \subsubsection{Components}
-A Turing Machine consists of the following parts:
+The different components of a Turing Machine:
 
 \begin{enumerate}
-    \item \textbf{Tape:} \\
-    An infinite one-dimensional strip divided into cells. Each cell can hold a single symbol from a finite set of symbols (which includes a blank symbol).
-
-    The tape serves as both the input/output medium and the machine's memory.
-
     \item \textbf{Head:} \\
     A read/write head that moves along the tape one cell at a time.
     It can read the symbol on the tape, write a symbol, or leave the symbol unchanged.
 
     \item \textbf{State Register:} \\
-    Keeps track of the current state of the machine.
+    Keeps track of the current state of the finite state machine.
     The machine has a finite set of states, one of which is designated as the starting state, and some may be designated as halting states.
 
     \item \textbf{Transition Function:} \\
@@ -46,4 +41,9 @@ A Turing Machine consists of the following parts:
         \item The next state to transition to.
     \end{itemize}
 \end{enumerate}
+
+The Turing Machine operates on a tape, which is an infinite one-dimensional strip divided into cells. 
+Each cell can hold a single symbol from a finite set of symbols (which includes a blank symbol).
+
+This is the main memory which the Turing Machine operates on and serves as both the input and output medium.
 
