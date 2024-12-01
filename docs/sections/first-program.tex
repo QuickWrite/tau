@@ -15,12 +15,12 @@ In the head we can define what the Turing Machine needs:
 \begin{enumerate}
     \item The different symbols the Turing Machine can read/write on the tape
     \item The blank symbol on the tape
-    \item The state that should be the state that the Turing Machine starts with
+    \item The state in which the Turing Machine should start
     \item The state where the Turing Machine should end
     \item If something should be on the tape before the machine runs the tape also needs to be specified
 \end{enumerate}
 
-So let's define the ones we need:
+So let's define the things we need:
 \begin{verbatim}
     symbols = 0, Hello, World
     blank = 0
@@ -28,11 +28,11 @@ So let's define the ones we need:
     start = ?
     end = ?
 \end{verbatim}
-
 (The contents of \code{start} and \code{end} currently contain a \code{?} as we do not currently know what should be put in here.)
 
-So what can we see?
+\vspace{0.8em}
 
+\textbf{So: What can we see?}
 \begin{itemize}
     \item Every single statement we define has the structure: 
     \begin{center}
