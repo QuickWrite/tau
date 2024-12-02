@@ -1,0 +1,18 @@
+Some things are not being set up by the program, but rather before executing the program in the command line.
+
+These different settings are flags that can be specified with \code{--\{name\} \{value\}}.
+
+\begin{table}[h]
+    \renewcommand\arraystretch{1.5}
+    \centering
+    \begin{tabular}{c|c|c}
+        Name & Value & Meaning \\
+        \hline
+        \code{view-width} & Number ($\geq 5$) & The elements of the tape that should be shown on each iteration. \\
+        \code{max-iter}   & Number ($\geq 1$) & The maximum amount of iterations the Turing Machine should do.
+    \end{tabular}
+    \caption{The different flags that the Tau programming language has}
+\end{table}
+
+So for example if the program is being run with the flags \code{./tau program.tau --max-iter 1} the program will just 
+run for one iteration and then terminate.

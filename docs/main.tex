@@ -1,0 +1,60 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lachaise Assignment
+% LaTeX Template
+% Version 1.0 (26/6/2018)
+%
+% This template originates from:
+% http://www.LaTeXTemplates.com
+%
+% Authors:
+% Marion Lachaise & François Févotte
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{turingmachine}
+
+\newcommand{\importsection}[2]{\newpage
+\section{#2}
+\input{#1}}
+
+\input{structure.tex} % Include the file specifying the document structure and custom commands
+
+\title{Tau ($\tau$) Documentation} % Title
+
+\author{QuickWrite} % Author name
+
+\date{Version: 1.0.0} % Date can be abused as a Version specifier
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Print the title
+
+This document is licensed under the \href{https://creativecommons.org/licenses/by-nc-sa/4.0/}{CC BY-NC-SA 4.0} license. 
+It is based upon the ``Lachaise Assignment'' template by Marion Lachaise \& François Févotte.
+
+The document serves as a guide and as the primary documentation for the small programming language called ``Tau''.
+
+\tableofcontents
+
+\importsection{sections/introduction}{Introduction}
+
+\importsection{sections/first-program}{The first program}
+
+\importsection{sections/language-documentation}{Language Documentation}
+
+\importsection{sections/flags}{Flags}
+
+\end{document}
