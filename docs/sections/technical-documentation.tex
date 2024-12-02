@@ -1,0 +1,75 @@
+The programming language Tau is a very simple language. It only implements a Turing Machine and the interface, which is the programming language.
+
+\subsection{EBNF}
+This is how the language is parsed. It does not mean that everything that can be built with this EBNF syntax is also valid.
+It is implied that between each token there can be as much whitespace as needed. 
+The tokens are being declared with uppercase letters.
+
+\begin{verbatim}
+    program = head, body;
+    head = { statement };
+    body = { state };
+
+    statement = IDENTIFIER, EQUALS, ( list | IDENTIFIER );
+    state = IDENTIFIER, CURLY_OPEN, { rule }, CURLY_CLOSE;
+    rule = (IDENTIFIER | UNDERSCORE), EQUALS, IDENTIFIER, DIRECTION, IDENTIFIER;
+
+    list = IDENTIFIER, { COMMA, IDENTIFIER };
+
+    IDENTIFIER = character - "_", { character };
+    character = "A" .. "Z" | "a" .. "z" | "_";
+
+    EQUALS = "=";
+    COMMA = ",";
+    UNDERSCORE = "_";
+
+    DIRECTION = "RIGHT" | "R" | "LEFT" | "L" | "STAY" | "S";
+\end{verbatim}
+
+\subsection{Linking}
+There are two different linking steps:
+\begin{enumerate}
+    \item Linking for the head where the different statements are being checked and converted.
+    \item Linking for the body where the references are being built.
+\end{enumerate}
+
+\subsubsection{Head Linking}
+The emulator that executes the defined Turing Machine does not use strings. 
+This means that all of these strings have to be converted to integers. 
+This is being done by using the index of the symbols.
+
+But any statement can be defined in any order, which means that this linking has to be done after
+the parsing of the head. This means that this is being done when the divider is being found.
+
+It checks if all the necessary statements are being defined and applies default values if not.
+It also checks if the blank is a valid symbol.
+
+\subsubsection{Body Linking}
+Any state can be defined in any order. This means that there can be a different state which is being
+referenced that will be parsed. This means that the linking is also being done after the parser finds the end
+of the file.
+
+The linker also needs the states to be exhaustive. This means that every single possibility is being covered.
+For example: If there are the symbols \code{0}, \code{1}, \code{2} and \code{3}, a state like this:
+\begin{verbatim}
+    TEST {
+        1 = 2, RIGHT, TEST
+        2 = 2, STAY, HALT
+    }
+\end{verbatim}
+will throw an error as the \code{0} and \code{3} aren't defined. This will happen even if this rule will never be reached
+as the linker does not know at this stage if this rule will be accessed.
+
+This can be easily avoided by adding a rule that will be triggered for any other symbol:
+\begin{verbatim}
+    TEST {
+        1 = 2, RIGHT, TEST
+        2 = 2, STAY, HALT
+        _ = 1, STAY, HALT
+    }
+\end{verbatim}
+
+The \code{\_} defines that this state should execute this rule in any other scenario on the tape. 
+It is like the \code{else} block in many programming languages.
+
+There can't be more than one \code{\_}-rules in one state.
