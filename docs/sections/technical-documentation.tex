@@ -3,7 +3,7 @@ The programming language Tau is a very simple language. It only implements a Tur
 \subsection{EBNF}
 This is how the language is parsed. It does not mean that everything that can be built with this EBNF syntax is also valid.
 It is implied that between each token there can be as much whitespace as needed. 
-The tokens are being declared with uppercase letters.
+The tokens are being declared with uppercase letters. Comments are separate as they are just being skipped by the lexer.
 
 \begin{verbatim}
     program = head, body;
