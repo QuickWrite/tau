@@ -86,7 +86,7 @@ The program is separated into two different parts: The **head** and the **body**
   ```
 
 > [!NOTE]
-> Whitespace is nearly irrellevant. This means that constructs like this would also be possible (but isn't recommended):
+> Whitespace is nearly irrelevant. This means that constructs like this would also be possible (but isn't recommended):
 > ```
 > A{1=0,RIGHT,A _=1,LEFT,B}
 > ```
