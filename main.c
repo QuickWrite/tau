@@ -87,11 +87,29 @@ str2int_errno str2int(int *out, const char *s, int base) {
     return STR2INT_SUCCESS;
 }
 
+void print_help(void) {
+    printf(
+        "\033[1;4mTAU Help\033[0m\n\n"
+        "\033[3;4mGeneral command syntax:\033[0m\n"
+        "  ./tau <filename>\n\n"
+        "\033[3;4mFlags:\033[0m\n"
+        "  --help          Prints this help message.\n"
+        "  --view-width    Sets the amount of cells that are being printed.\n"
+        "                  \033[2m(default: 9)\033[0m\n"
+        "  --max-iter      Sets the maximum amount of iterations the Turing Machine can do.\n"
+        "                  \033[2m(default: 5000)\033[0m\n"
+    );
+}
 
 int check_long(struct Arguments* arguments, const int argc, const char** const argv) {
     if(argc == 0) {
         // error
         return 0;
+    }
+
+    if(strcmp(&argv[0][2], "help") == 0) {
+        print_help();
+        exit(EXIT_SUCCESS);
     }
 
     int second;
@@ -159,6 +177,11 @@ int main(const int argc, const char** const argv) {
         .view_width = 9,
         .max_iter = 5000
     };
+
+    if(strcmp(argv[1], "--help") == 0) {
+        print_help();
+        return 0;
+    }
 
     if(argc > 2 && !parse_arguments(&arguments, argc, argv)) {
         fprintf(stderr, "Something went wrong: Aborting.\n");
