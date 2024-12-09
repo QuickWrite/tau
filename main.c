@@ -112,6 +112,11 @@ int check_long(struct Arguments* arguments, const int argc, const char** const a
         exit(EXIT_SUCCESS);
     }
 
+    if(argc < 2) {
+        fprintf(stderr, "\033[31mIf a flag is being used that contains data, the data should be provided.\033[0m\n");
+        return 0;
+    }
+
     int second;
     if(str2int(&second, argv[1], 10) != STR2INT_SUCCESS) {
         fprintf(stderr, "\033[31mThe content of the flag has to be a number.\033[0m\n");
