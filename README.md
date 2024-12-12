@@ -1,9 +1,6 @@
 # tau
 (τ) An esoteric [Turing machine](https://en.wikipedia.org/wiki/Turing_machine) programming language
 
-> [!IMPORTANT]
-> This project is still under development and not really usable. It is mostly a toy project.
-
 ## Name
 The name is an abbreviation for "**T**uring **Au**tomaton" as it implements a turing machine.
 
