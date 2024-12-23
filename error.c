@@ -57,7 +57,9 @@ void print_parser_error(FILE* fptr, const char* file_name, char* error_type, con
 
     fprintf(stderr, "--> %s:%u:%u\n", file_name, position.line + 1, position.line_position + 1);
 
-    unsigned int chars = calc_chars(position.line);
+    int chars = calc_chars(position.line + 2);
+    chars = chars > 1 ? chars : 2;
+
     char start_whitespace[chars];
     memset(start_whitespace, ' ', chars);
     start_whitespace[chars - 1] = '\0';
