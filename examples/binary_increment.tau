@@ -1,0 +1,23 @@
+# Implements a simple binary incrementer
+
+symbols = 0,1,x
+blank = x
+start = FIND_END
+end = HALT
+
+# The tape can be any binary number
+tape = 1,0,0,0,1
+
+------
+
+FIND_END {
+    x = x, LEFT, ADD_ONE
+    0 = 0, RIGHT, FIND_END
+    1 = 1, RIGHT, FIND_END
+}
+
+ADD_ONE {
+    0 = 1, STAY, HALT
+    1 = 0, LEFT, ADD_ONE
+    x = 1, STAY, HALT
+}
