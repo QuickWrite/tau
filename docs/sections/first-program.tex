@@ -1,4 +1,4 @@
-In most programming languages the first program people write is the so called ``Hello World'' program.
+In most programming languages the first program people write is the so-called ``Hello World'' program.
 
 The main idea is to show \code{Hello World} to the user.
 
@@ -34,7 +34,7 @@ So let's define the things we need:
 
 \textbf{So: What can we see?}
 \begin{itemize}
-    \item Every single statement we define has the structure: 
+    \item Each statement follows this structure: 
     \begin{center}
         \code{<name> = <value>}
     \end{center}
@@ -56,11 +56,11 @@ and the end state as \code{HALT} as it will halt the Turing Machine. This means 
     end = HALT
 \end{verbatim}
 
-Now to end the head and start the body we can write any number of \code{-} as a delimitor. For example something like this: \code{----}.
+Now to end the head and start the body we can write any number of \code{-} as a delimiter. For example something like this: \code{----}.
 
 \subsubsection{The body}
 The body contains the state machine. This state machine is the heart of the Turing Machine. 
-So let's visualize how the state machine should look like before we actually implement it:
+So let's visualize how the state machine should look before we actually implement it:
 
 \begin{center}
     \begin{tikzpicture}[->, % makes the edges directed
@@ -163,13 +163,12 @@ This should now print something like this:
     ..., 0, 0, 0, Hello, World, 0, 0, 0, 0, ...
 \end{verbatim}
 
-And now you have written and executed your first Tau program. Yay!
+You have now written and executed your first Tau program. Yay!
 
 \subsection{Comments}
-Comments are an essential aspect of documenting the code so that other people and your later self can understand what the code does
+Comments are an essential aspect of documenting the code so that other people -- and your future self -- can understand what the code does
 if it doesn't work what the intention was.
-
-In Tau there are only single line comments. They start with a \code{\#} and end with the next Line separator (\code{\textbackslash n}).
+In Tau there are only single line comments. They start with a \code{\#} and end with the next line separator (\code{\textbackslash n}).
 
 These comments can be added anywhere and nothing inside the comment will be parsed.
 
