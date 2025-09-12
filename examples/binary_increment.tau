@@ -1,11 +1,5 @@
 # Implements a simple binary incrementer
 
-
-
-
-
-
-
 symbols = 0,1,x,_
 blank = x
 start = FIND_END
