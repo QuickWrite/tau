@@ -10,11 +10,17 @@
 
 #define TO_END goto end
 
-#define CHECK_TOKEN(token_name, message) if (lexer->curr_token.type != token_name) { \
+#define FAIL_WITH_ERROR(_error, _message) \
             fseek(lexer->fptr, lexer->curr_token.position, SEEK_SET); \
-            print_parser_error(lexer->fptr, lexer->file_name, "Invalid Token", message); \
+            print_parser_error(lexer->fptr, lexer->file_name, _error, _message); \
             exit(10); \
+
+#define CHECK_TOKEN_IF(_token_name, _message, __op__) \
+        if (lexer->curr_token.type __op__ _token_name) { \
+            FAIL_WITH_ERROR("Invalid Token", _message) \
         }
+
+#define CHECK_TOKEN(token_name, message) CHECK_TOKEN_IF(token_name, message, !=)
 
 struct Head {
     char* blank;
@@ -53,12 +59,7 @@ static size_t parse_symbol_list(struct Lexer* const lexer, char*** const symbols
     while (1) {
         next_token(lexer);
         
-        if (lexer->curr_token.type == TOK_EOF) {
-            // TODO: Way better error
-
-            fprintf(stderr, "End of file whilst parsing list.\n");
-            exit(10);
-        }
+        CHECK_TOKEN_IF(TOK_EOF, "End of file whilst parsing list.", ==);
 
         CHECK_TOKEN(TOK_IDENTIFIER, "A list can only contain identifiers.");
 
@@ -172,19 +173,9 @@ static void parse_head(struct Lexer* const lexer, struct Head* head) {
     next_token(lexer);
 
     for (;lexer->curr_token.type != TOK_DELIMITER; next_token(lexer)) {
-        if (lexer->curr_token.type == TOK_EOF) {
-            // TODO: Way better error
+        CHECK_TOKEN_IF(TOK_EOF, "End of file reached before end of head.", ==);
 
-            fprintf(stderr, "End of file reached before end of head.\n");
-            exit(10);
-        }
-
-        if(lexer->curr_token.type != TOK_IDENTIFIER) {
-            // TODO: Way better error
-
-            fprintf(stderr, "Statement has to start with an identifier.\n");
-            exit(10);
-        }
+        CHECK_TOKEN(TOK_IDENTIFIER, "Statement has to start with an identifier.");
 
         parse_statement(lexer, head, lexer->curr_token.content);
     }
@@ -300,17 +291,26 @@ void parse_state(struct Lexer* const lexer, const struct Head* head, struct Inte
     while (lexer->next_token.type != TOK_CLOSE_CURLY && lexer->next_token.type != TOK_EOF) {
         next_token(lexer);
         if(lexer->curr_token.type != TOK_IDENTIFIER && lexer->curr_token.type != TOK_UNDERSCORE) {
-            // TODO: Add to new error system
-            fprintf(stderr, "Only identifiers are supported as Symbols. The default can be declared with `_`.\n");
-            exit(10);
+            FAIL_WITH_ERROR("Invalid Token", "Only identifiers are supported as Symbols. The default can be declared with `_`.");
         }
 
         size_t position = lexer->curr_token.type == TOK_UNDERSCORE ? (size_t)-1 : find_symbol(head, lexer->curr_token.content);
 
         if(lexer->curr_token.type == TOK_IDENTIFIER) {
             if (position == (size_t)-1) {
-                fprintf(stderr, "Symbol %s does not exist in symbol list.\n", lexer->curr_token.content);
-                exit(10);
+                char *error = NULL;
+
+                if (
+                    asprintf(
+                        &error,
+                        "Symbol %s does not exist in symbol list.",
+                        lexer->curr_token.content
+                    ) == -1
+                ) {
+                    exit(EXIT_FAILURE);
+                }
+
+                FAIL_WITH_ERROR("Invalid Symbol", error);
             }
 
             if(state->rules[position].next_state != NULL) {
