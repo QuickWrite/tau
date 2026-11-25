@@ -3,17 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
-
-#define calc_chars(number) (size_t)(ceil(log10(number))+1)
-
-// Copied from https://stackoverflow.com/a/58532788
-#define min(a,b)             \
-({                           \
-    __typeof__ (a) _a = (a); \
-    __typeof__ (b) _b = (b); \
-    _a < _b ? _a : _b;       \
-})
 
 struct PositionData {
     unsigned int line;
@@ -65,18 +54,11 @@ void print_parser_error(FILE* fptr, const char* file_name, const char* error_typ
 
     fprintf(stderr, "--> %s:%u:%u\n", file_name, position.line + 1, position.line_position + 1);
 
-    size_t chars = min(calc_chars(position.line + 1), (size_t)2);
+    // Copied from https://stackoverflow.com/a/5604971
+    int linenum_len = snprintf(NULL, 0, "%i", (position.line_position + 1));
 
-    char start_whitespace[chars];
-    memset(start_whitespace, ' ', chars);
-    start_whitespace[chars - 1] = '\0';
-
-    fprintf(stderr, "%s |\n", start_whitespace);
+    fprintf(stderr, "%*s |\n", linenum_len + 1, "");
     fprintf(stderr, "%u | %s", position.line + 1, position.line_content);
-    
-    char position_whitespace[position.line_position + 1];
-    memset(position_whitespace, ' ', position.line_position);
-    position_whitespace[position.line_position] = '\0';
 
-    fprintf(stderr, "%s | %s^ %s\n", start_whitespace, position_whitespace, error_message);
+    fprintf(stderr, "%*s | %*s^ %s\n", linenum_len + 1, "", position.line_position, "", error_message);
 }

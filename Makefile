@@ -4,10 +4,10 @@ SOURCES := $(wildcard *.c)
 CFLAGS = -Wall -Wextra
 
 build: $(HEADERS) $(SOURCES)
-	cc $(SOURCES) $(CFLAGS) -lm -o tau
+	cc $(SOURCES) $(CFLAGS) -o tau
 
 release: $(HEADERS) $(SOURCES)
-	cc $(SOURCES) $(CFLAGS) -lm -o tau -O3 -static
+	cc $(SOURCES) $(CFLAGS) -o tau -O3 -static
 
 clean:
 	rm -f *.o
