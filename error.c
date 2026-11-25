@@ -2,8 +2,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
+#include <math.h>
+
+#define calc_chars(number) (size_t)(ceil(log10(number))+1)
+
+// Copied from https://stackoverflow.com/a/58532788
+#define min(a,b)             \
+({                           \
+    __typeof__ (a) _a = (a); \
+    __typeof__ (b) _b = (b); \
+    _a < _b ? _a : _b;       \
+})
 
 struct PositionData {
     unsigned int line;
@@ -49,16 +59,13 @@ static struct PositionData get_position(FILE *fptr) {
     };
 }
 
-#define calc_chars(number) (int)((ceil(log10(number))+1)*sizeof(char))
-
-void print_parser_error(FILE* fptr, const char* file_name, char* error_type, const char* const error_message) {
+void print_parser_error(FILE* fptr, const char* file_name, const char* error_type, const char* const error_message) {
     fprintf(stderr, "ERROR: %s\n", error_type);
-    struct PositionData position = get_position(fptr);
+    const struct PositionData position = get_position(fptr);
 
     fprintf(stderr, "--> %s:%u:%u\n", file_name, position.line + 1, position.line_position + 1);
 
-    int chars = calc_chars(position.line + 2);
-    chars = chars > 1 ? chars : 2;
+    size_t chars = min(calc_chars(position.line + 1), (size_t)2);
 
     char start_whitespace[chars];
     memset(start_whitespace, ' ', chars);
