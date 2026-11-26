@@ -134,7 +134,7 @@ void next_token(struct Lexer* const lexer) {
             break;
         }
 
-        print_parser_error(lexer->fptr, lexer->file_name, "Lexer Error", "Cannot decypher this token.");
+        print_parser_error(lexer->fptr, lexer->file_name, "Lexer Error", "Cannot decipher this token.");
         exit(5);
     }
 
