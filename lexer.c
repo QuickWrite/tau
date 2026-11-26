@@ -24,26 +24,26 @@ struct Lexer init_lexer(const char* const file_name) {
     return lexer;
 }
 
-void skip_whitespace(FILE* const fptr) {
+void skip_whitespace(struct Lexer* const lexer) {
     int c;
-    while((c = getc(fptr)) != EOF && isspace(c));
+    while((c = getc(lexer->fptr)) != EOF && isspace(c));
 
-    ungetc(c, fptr);
+    ungetc(c, lexer->fptr);
 }
 
-void skip_comment(FILE* const fptr) {
+void skip_comment(struct Lexer* const lexer) {
     int c;
-    while((c = getc(fptr)) != EOF && c != '\n');
+    while((c = getc(lexer->fptr)) != EOF && c != '\n');
 }
 
-void skip_delimiter(FILE* const fptr) {
+void skip_delimiter(struct Lexer* const lexer) {
     int c;
-    while((c = getc(fptr)) != EOF && c == '-');
+    while((c = getc(lexer->fptr)) != EOF && c == '-');
 
-    ungetc(c, fptr);
+    ungetc(c, lexer->fptr);
 }
 
-char* get_identifier(FILE* const fptr, int c) {
+char* get_identifier(struct Lexer* const lexer, int c) {
     size_t size = 16;
     char* buf = calloc(size, sizeof(char));
     if(buf ==  NULL) {
@@ -55,7 +55,7 @@ char* get_identifier(FILE* const fptr, int c) {
 
     size_t i = 1;
     for(; i < 255; ++i) {
-        c = getc(fptr);
+        c = getc(lexer->fptr);
 
         if(!isalnum(c) && c != '_') {
             break;
@@ -65,7 +65,7 @@ char* get_identifier(FILE* const fptr, int c) {
             size *= 2;
             buf = realloc(buf, sizeof(char) * size);
 
-            if(buf ==  NULL) {
+            if(buf == NULL) {
                 fprintf(stderr, "Couldn't allocate enough memory.\n");
                 exit(100);
             }
@@ -74,21 +74,23 @@ char* get_identifier(FILE* const fptr, int c) {
         buf[i] = c;
     }
 
-    if(i > 255) {
-        fprintf(stderr, "Identifiers cannot be larger than '255' characters long.");
+    if(i >= 255) {
+        fseek(lexer->fptr, ftell(lexer->fptr) - i + 1, SEEK_SET);
+        print_parser_error(lexer->fptr, lexer->file_name, "Lexer error", "Identifiers cannot be larger than '255' characters long.");
+        exit(5);
     }
 
     buf[i] = '\0';
     buf = realloc(buf, sizeof(char) * (i + 1));
     
-    ungetc(c, fptr);
+    ungetc(c, lexer->fptr);
 
     return buf;
 }
 
 void next_token(struct Lexer* const lexer) {
     start:
-    skip_whitespace(lexer->fptr);
+    skip_whitespace(lexer);
 
     struct Token next;
 
@@ -100,7 +102,7 @@ void next_token(struct Lexer* const lexer) {
 
     case '#':
         // This is a comment. It should not be returned as a token as it is completely useless for a parser
-        skip_comment(lexer->fptr);
+        skip_comment(lexer);
 
         goto start;
         
@@ -121,7 +123,7 @@ void next_token(struct Lexer* const lexer) {
         break;
 
     case '-':
-        skip_delimiter(lexer->fptr);
+        skip_delimiter(lexer);
 
         next = new_token(TOK_DELIMITER);
         break;
@@ -129,7 +131,7 @@ void next_token(struct Lexer* const lexer) {
     default:
         if(isalpha(c) || isdigit(c)) {
             next = new_token(TOK_IDENTIFIER);
-            next.content = get_identifier(lexer->fptr, c);
+            next.content = get_identifier(lexer, c);
 
             break;
         }
