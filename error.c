@@ -55,7 +55,7 @@ void print_parser_error(FILE* fptr, const char* file_name, const char* error_typ
     fprintf(stderr, "--> %s:%u:%u\n", file_name, position.line + 1, position.line_position + 1);
 
     // Copied from https://stackoverflow.com/a/5604971
-    int linenum_len = snprintf(NULL, 0, "%i", (position.line_position + 1));
+    int linenum_len = snprintf(NULL, 0, "%i", (position.line + 1)) - 1;
 
     fprintf(stderr, "%*s |\n", linenum_len + 1, "");
     fprintf(stderr, "%u | %s", position.line + 1, position.line_content);
